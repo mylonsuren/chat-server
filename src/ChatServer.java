@@ -96,15 +96,6 @@ class clientThread extends Thread {
             is = new DataInputStream(clientSocket.getInputStream());
             os = new PrintStream(clientSocket.getOutputStream());
 
-            if (numParticipants > 3) {
-                threads[numParticipants-1].os.println("Sorry, the conversation has reached its maximum number " +
-                        "of participants");
-                threads[numParticipants-1].interrupt();
-                System.out.println("Max Number of Participants exceeded.");
-                threads[maxClientsCount-1] = null;
-                maxClientsCount--;
-            }
-
             String name;
             while (true) {
                 os.println("Enter your name:");
@@ -142,6 +133,16 @@ class clientThread extends Thread {
                     }
                 } catch(Error error) {
 
+                }
+
+                try {
+                    if (line.startsWith("/shutdown")) {
+                        System.out.println("Shutting down server...");
+                        System.exit(0);
+                    }
+                } catch (Error error) {
+                    System.out.println("There was error shutting down the server.");
+                    System.out.println(error);
                 }
 
 
@@ -201,4 +202,3 @@ class clientThread extends Thread {
         }
     }
 }
-

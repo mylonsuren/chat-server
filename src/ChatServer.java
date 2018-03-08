@@ -84,6 +84,9 @@ class clientThread extends Thread {
     public void shutdownServer() {
         try {
             System.out.println("Shutting down server...");
+            for (int i = 0; i < numParticipants; i++) {
+                threads[i].os.println("Shutting down server...");
+            }
             System.exit(0);
         } catch (Error error) {
             System.out.println("There was error shutting down the server.");

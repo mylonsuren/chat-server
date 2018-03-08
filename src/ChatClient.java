@@ -1,5 +1,8 @@
 
 
+
+
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedReader;
@@ -7,9 +10,10 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.applet.Applet;
 import java.io.*;
 
-public class ChatClient implements Runnable {
+public class ChatClient extends Applet implements Runnable {
 
     // The client socket
     private static Socket clientSocket = null;
@@ -22,6 +26,8 @@ public class ChatClient implements Runnable {
     private static boolean closed = false;
 
     public static void main(String[] args) {
+
+
 
         // The default port.
         int portNumber = 2222;

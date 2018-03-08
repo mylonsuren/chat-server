@@ -8,7 +8,7 @@
 *.o
 *.so
 *.idea
-*.imlgit
+*.iml
 
 # Packages #
 ############

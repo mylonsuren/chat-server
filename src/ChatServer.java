@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -66,6 +67,7 @@ public class ChatServer {
 class clientThread extends Thread {
 
     private String clientName = null;
+    private String msgName = null;
     private DataInputStream is = null;
     private PrintStream os = null;
     private Socket clientSocket = null;
@@ -73,24 +75,45 @@ class clientThread extends Thread {
     private int maxClientsCount;
     private int numParticipants;
 
+    private HashMap<String, String> commands;
+
     public clientThread(Socket clientSocket, clientThread[] threads) {
         this.clientSocket = clientSocket;
         this.threads = threads;
         maxClientsCount = threads.length;
 
         this.numParticipants = 0;
+        this.commands = new HashMap<String, String>();
+        this.commands.put("SHUTDOWN_SERVER", "/shutdown");
+        this.commands.put("LEAVE_CHAT", "/quit");
+        this.commands.put("VIEW_MEMBERS", "/members");
     }
 
-    public void shutdownServer() {
+    public void shutdownServer(String name) {
         try {
-            System.out.println("Shutting down server...");
+            System.out.println(name + " has shut down server");
+            System.out.println("Shutting down the server...");
             for (int i = 0; i < numParticipants; i++) {
                 threads[i].os.println("Shutting down server...");
+                threads[i].os.println(name + " has shut down server");
             }
             System.exit(0);
         } catch (Error error) {
             System.out.println("There was error shutting down the server.");
             System.out.println(error);
+        }
+    }
+
+    public void viewMembers() {
+        try {
+
+            System.out.println("Current Participants: ");
+            for (int i = 0; i < numParticipants; i++) {
+                System.out.println(threads[i].clientName);
+            }
+
+        } catch (Error error) {
+
         }
     }
 
@@ -127,6 +150,7 @@ class clientThread extends Thread {
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] != null && threads[i] == this) {
                         clientName = "@" + name;
+                        msgName = name;
                         break;
                     }
                 }
@@ -140,20 +164,38 @@ class clientThread extends Thread {
 
             while (true) {
                 String line = is.readLine();
+
+                // Chat commands
+
+                //quit chat
                 try {
-                    if (line.startsWith("/quit")) {
+                    if (line.startsWith(commands.get("LEAVE_CHAT"))) {
                         break;
                     }
-                } catch(Error error) {
+                } catch(Error error) {}
 
-                }
-
+                //shutdown server
                 try {
-                    if (line.startsWith("/shutdown")) {
-                        shutdownServer();
+                    if (line.startsWith(commands.get("SHUTDOWN_SERVER"))) {
+                        shutdownServer(name);
                     }
                 } catch (Error error) {
                     System.out.println("There was error shutting down the server.");
+                    System.out.println(error);
+                }
+
+                //view participants
+                try {
+                    if (line.startsWith(commands.get("VIEW_MEMBERS"))) {
+                        System.out.println("HERE");
+//                        viewMembers();
+                        this.os.println("Current Participants: ");
+                        for (int i = 0; i < numParticipants; i++) {
+                            this.os.println(threads[i].msgName);
+                        }
+                        continue;
+                    }
+                } catch (Error error) {
                     System.out.println(error);
                 }
 
@@ -168,9 +210,9 @@ class clientThread extends Thread {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {
-                                        threads[i].os.println("[" + name + "] " + words[1]);
+                                        threads[i].os.println("<PM> [" + name + "] " + words[1]);
 
-                                        this.os.println(">" + name + "> (to:" + words[0] + ")" + words[1]);
+                                        this.os.println("[" + name + "] (to:" + words[0] + ") " + words[1]);
                                         break;
                                     }
                                 }
@@ -182,7 +224,7 @@ class clientThread extends Thread {
                     synchronized (this) {
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println("<" + name + "> " + line);
+                                threads[i].os.println("[" + name + "] " + line);
                             }
                         }
                     }

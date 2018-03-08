@@ -81,6 +81,16 @@ class clientThread extends Thread {
         this.numParticipants = 0;
     }
 
+    public void shutdownServer() {
+        try {
+            System.out.println("Shutting down server...");
+            System.exit(0);
+        } catch (Error error) {
+            System.out.println("There was error shutting down the server.");
+            System.out.println(error);
+        }
+    }
+
     public void run() {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
@@ -137,8 +147,7 @@ class clientThread extends Thread {
 
                 try {
                     if (line.startsWith("/shutdown")) {
-                        System.out.println("Shutting down server...");
-                        System.exit(0);
+                        shutdownServer();
                     }
                 } catch (Error error) {
                     System.out.println("There was error shutting down the server.");

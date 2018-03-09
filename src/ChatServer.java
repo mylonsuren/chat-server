@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,6 +81,7 @@ class clientThread extends Thread {
     private int maxClientsCount;
 
     private HashMap<String, String> commands;
+    private HashMap<Integer, String> specialCharacters;
 
     public clientThread(Socket clientSocket, clientThread[] threads) {
         this.clientSocket = clientSocket;
@@ -91,6 +93,12 @@ class clientThread extends Thread {
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
         this.commands.put("LEAVE_CHAT", "/quit");
         this.commands.put("VIEW_MEMBERS", "/members");
+
+
+        this.specialCharacters = new HashMap<Integer, String>();
+        this.specialCharacters.put(0, "@");
+        this.specialCharacters.put(1, "/");
+
     }
 
     public void shutdownServer(String name) {
@@ -116,6 +124,7 @@ class clientThread extends Thread {
                 os.println(i+1 + " - " + threads[i].msgName);
             }
         } catch (Error error) {
+            os.println((error));
         }
     }
 
@@ -132,12 +141,13 @@ class clientThread extends Thread {
             os = new PrintStream(clientSocket.getOutputStream());
 
             String name;
-            String timeStamp;
             while (true) {
                 os.println("Enter your name:");
                 name = is.readLine().trim();
-                if (name.indexOf('@') == -1) {
-                    timeStamp = new SimpleDateFormat("MM.dd.HH.mm.ss").format(new java.util.Date());
+                if (name.indexOf(specialCharacters.get(0)) == -1) {
+                    break;
+                }
+                else if (name.indexOf(specialCharacters.get(1)) == -1) {
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");

@@ -95,6 +95,7 @@ class clientThread extends Thread {
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
         this.commands.put("LEAVE_CHAT", "/quit");
         this.commands.put("VIEW_MEMBERS", "/members");
+        this.commands.put("REMOVE_USER", "/remove");
 
 
         this.specialCharacters = new HashMap<Integer, String>();
@@ -132,6 +133,27 @@ class clientThread extends Thread {
             }
         } catch (Error error) {
             os.println((error));
+        }
+    }
+
+    public void removeUser(String user) {
+        try {
+            synchronized (this) {
+                for (int i = 0; i < ChatServer.numParticipants; i++) {
+                    threads[i].os.println(msgName + " removed " + user + " from the chat");
+                    if (threads[i] != null && threads[i] != this
+                            && threads[i].clientName != null
+                            && threads[i].msgName.equals(user)) {
+
+                        threads[i].os.println("You have been removed from the chat by " + msgName);
+                        threads[i].os.close();
+                        ChatServer.numParticipants--;
+                        break;
+                    }
+                }
+            }
+        } catch (Error error) {
+
         }
     }
 
@@ -210,6 +232,23 @@ class clientThread extends Thread {
                         viewMembers();
                         continue;
                     }
+                } catch (Error error) {
+                    System.out.println(error);
+                }
+
+                //remove user
+                try {
+                    if (line.startsWith(commands.get("REMOVE_USER"))) {
+                        String[] message = line.split("\\s", 2);
+                        if (message.length > 1 && message[1] != null) {
+                            message[1] = message[1].trim();
+                            if (!message[1].isEmpty()) {
+                                removeUser(message[1]);
+                            }
+                        }
+                        continue;
+                    }
+
                 } catch (Error error) {
                     System.out.println(error);
                 }

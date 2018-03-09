@@ -33,6 +33,7 @@ public class ChatServer {
         if (args.length < 1) {
             System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
                     + "Now using port number=" + portNumber);
+            System.out.println("Server is now running on port 2222...");
         } else {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
@@ -59,6 +60,7 @@ public class ChatServer {
                 if (i == maxClientsCount) {
                     PrintStream os = new PrintStream(clientSocket.getOutputStream());
                     os.println("Server too busy. Try later.");
+                    System.out.println("Server has reached capacity...");
                     os.close();
                     clientSocket.close();
                 }
@@ -108,6 +110,11 @@ class clientThread extends Thread {
             for (int i = 0; i < ChatServer.numParticipants ; i++) {
                 threads[i].os.println("Shutting down server...");
                 threads[i].os.println(name + " has shut down server");
+
+                System.out.println("Server shutdown initiated...");
+                System.out.println("Server shutting down...");
+                System.out.println("Server has shut down...");
+
             }
             System.exit(0);
         } catch (Error error) {
@@ -245,12 +252,11 @@ class clientThread extends Thread {
                     if (threads[i] != null && threads[i] != this
                             && threads[i].clientName != null) {
                         threads[i].os.println("*** The user " + name
-                                + " is leaving the chat room !!! ***");
+                                + " is leaving the chat room ***");
                     }
                 }
             }
             os.println("*** Goodbye " + name + " ***");
-
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] == this) {

@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class ChatServer {
@@ -21,6 +23,7 @@ public class ChatServer {
     // This chat server can accept up to maxClientsCount clients' connections.
     private static final int maxClientsCount = 10;
     private static final clientThread[] threads = new clientThread[maxClientsCount];
+    public static int numParticipants = 0;
 
     public static void main(String args[]) {
 
@@ -40,6 +43,7 @@ public class ChatServer {
         }
 
 
+
         while (true) {
             try {
                 clientSocket = serverSocket.accept();
@@ -47,6 +51,7 @@ public class ChatServer {
                 for (i = 0; i < maxClientsCount; i++) {
                     if (threads[i] == null) {
                         (threads[i] = new clientThread(clientSocket, threads)).start();
+                        numParticipants++;
                         break;
                     }
                 }
@@ -73,7 +78,6 @@ class clientThread extends Thread {
     private Socket clientSocket = null;
     private final clientThread[] threads;
     private int maxClientsCount;
-    private int numParticipants;
 
     private HashMap<String, String> commands;
 
@@ -82,7 +86,7 @@ class clientThread extends Thread {
         this.threads = threads;
         maxClientsCount = threads.length;
 
-        this.numParticipants = 0;
+
         this.commands = new HashMap<String, String>();
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
         this.commands.put("LEAVE_CHAT", "/quit");
@@ -93,7 +97,7 @@ class clientThread extends Thread {
         try {
             System.out.println(name + " has shut down server");
             System.out.println("Shutting down the server...");
-            for (int i = 0; i < numParticipants; i++) {
+            for (int i = 0; i < ChatServer.numParticipants ; i++) {
                 threads[i].os.println("Shutting down server...");
                 threads[i].os.println(name + " has shut down server");
             }
@@ -105,15 +109,13 @@ class clientThread extends Thread {
     }
 
     public void viewMembers() {
+
         try {
-
-            System.out.println("Current Participants: ");
-            for (int i = 0; i < numParticipants; i++) {
-                System.out.println(threads[i].clientName);
+            os.println(("Current Participants: "));
+            for (int i = 0; i < ChatServer.numParticipants; i++) {
+                os.println(i+1 + " - " + threads[i].msgName);
             }
-
         } catch (Error error) {
-
         }
     }
 
@@ -121,26 +123,26 @@ class clientThread extends Thread {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
 
-        for (int i = 0; i < threads.length; i++) {
-            if (threads[i] != null) {
-                numParticipants += 1;
-            }
-        }
+
 
         try {
+
 
             is = new DataInputStream(clientSocket.getInputStream());
             os = new PrintStream(clientSocket.getOutputStream());
 
             String name;
+            String timeStamp;
             while (true) {
                 os.println("Enter your name:");
                 name = is.readLine().trim();
                 if (name.indexOf('@') == -1) {
+                    timeStamp = new SimpleDateFormat("MM.dd.HH.mm.ss").format(new java.util.Date());
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");
                 }
+
             }
 
 
@@ -170,6 +172,7 @@ class clientThread extends Thread {
                 //quit chat
                 try {
                     if (line.startsWith(commands.get("LEAVE_CHAT"))) {
+                        ChatServer.numParticipants--;
                         break;
                     }
                 } catch(Error error) {}
@@ -187,18 +190,14 @@ class clientThread extends Thread {
                 //view participants
                 try {
                     if (line.startsWith(commands.get("VIEW_MEMBERS"))) {
-                        System.out.println("HERE");
-//                        viewMembers();
-                        this.os.println("Current Participants: ");
-                        for (int i = 0; i < numParticipants; i++) {
-                            this.os.println(threads[i].msgName);
-                        }
+                        viewMembers();
                         continue;
                     }
                 } catch (Error error) {
                     System.out.println(error);
                 }
 
+                String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());
 
                 if (line.startsWith("@")) {
                     String[] words = line.split("\\s", 2);
@@ -210,7 +209,7 @@ class clientThread extends Thread {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {
-                                        threads[i].os.println("<PM> [" + name + "] " + words[1]);
+                                        threads[i].os.println(msgTime + " <PM> [" + name + "] " + words[1]);
 
                                         this.os.println("[" + name + "] (to:" + words[0] + ") " + words[1]);
                                         break;
@@ -222,9 +221,10 @@ class clientThread extends Thread {
                 } else {
 
                     synchronized (this) {
+
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println("[" + name + "] " + line);
+                                threads[i].os.println(msgTime +  " [" + name + "] " + line);
                             }
                         }
                     }

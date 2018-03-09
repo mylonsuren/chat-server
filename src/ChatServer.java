@@ -138,9 +138,12 @@ class clientThread extends Thread {
 
     public void removeUser(String user) {
         try {
-            synchronized (this) {
-                for (int i = 0; i < ChatServer.numParticipants; i++) {
-                    threads[i].os.println(msgName + " removed " + user + " from the chat");
+//            synchronized (this) {
+                for (int i = 0; i < maxClientsCount; i++) {
+                    if (threads[i] != null) {
+                        threads[i].os.println(msgName + " removed " + user + " from the chat");
+                    }
+
                     if (threads[i] != null && threads[i] != this
                             && threads[i].clientName != null
                             && threads[i].msgName.equals(user)) {
@@ -151,7 +154,7 @@ class clientThread extends Thread {
                         break;
                     }
                 }
-            }
+//            }
         } catch (Error error) {
 
         }
@@ -219,6 +222,7 @@ class clientThread extends Thread {
                 //shutdown server
                 try {
                     if (line.startsWith(commands.get("SHUTDOWN_SERVER"))) {
+                        os.println("You have shutdown the server");
                         shutdownServer(name);
                     }
                 } catch (Error error) {
@@ -243,6 +247,7 @@ class clientThread extends Thread {
                         if (message.length > 1 && message[1] != null) {
                             message[1] = message[1].trim();
                             if (!message[1].isEmpty()) {
+                                os.println(msgName + " removed " + message[1] + " from the chat");
                                 removeUser(message[1]);
                             }
                         }

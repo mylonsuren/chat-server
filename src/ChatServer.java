@@ -247,8 +247,13 @@ class clientThread extends Thread {
                         if (message.length > 1 && message[1] != null) {
                             message[1] = message[1].trim();
                             if (!message[1].isEmpty()) {
-                                os.println(msgName + " removed " + message[1] + " from the chat");
-                                removeUser(message[1]);
+                                if (message[1].equals(msgName)) {
+                                    os.println("Please use /quit to leave the chat");
+                                } else {
+                                    os.println(msgName + " removed " + message[1] + " from the chat");
+                                    removeUser(message[1]);
+                                }
+
                             }
                         }
                         continue;

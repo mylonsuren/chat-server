@@ -25,6 +25,8 @@ public class ChatServer {
     private static final int maxClientsCount = 10;
     private static final clientThread[] threads = new clientThread[maxClientsCount];
     public static int numParticipants = 0;
+    public static String chatName = "";
+    public static boolean nameModified = false;
 
     public static void main(String args[]) {
 
@@ -96,7 +98,9 @@ class clientThread extends Thread {
         this.commands.put("LEAVE_CHAT", "/quit");
         this.commands.put("VIEW_MEMBERS", "/members");
         this.commands.put("REMOVE_USER", "/remove");
-
+        this.commands.put("CHANGE_CHAT_NAME", "/change-chat-name");
+        this.commands.put("VIEW_CHAT_NAME", "/view-chat-name");
+        this.commands.put("RESET_CHAT_NAME", "/remove-chat-name");
 
         this.specialCharacters = new HashMap<Integer, String>();
         this.specialCharacters.put(0, "@");
@@ -136,35 +140,70 @@ class clientThread extends Thread {
         }
     }
 
+    public void viewChatName() {
+        try {
+            os.println("------ " + ChatServer.chatName + " ------");
+        } catch (Error error) {
+            os.println(error);
+        }
+    }
+
+    public void changeChatName(String chatName) {
+        try {
+            ChatServer.chatName = chatName;
+            ChatServer.nameModified = true;
+            for (int i = 0; i < maxClientsCount; i++) {
+                if (threads[i] != null) {
+                    threads[i].os.println("Chat Name updated to: " + ChatServer.chatName);
+                }
+            }
+
+
+        } catch (Error error) {
+            System.out.println(error);
+        }
+    }
+
+    public void removeChatName() {
+        try {
+            String newChatName = "";
+            for (int i = 0; i < maxClientsCount; i++) {
+                if (threads[i] != null) {
+                     newChatName += ", " + threads[i].msgName;
+                }
+            }
+            ChatServer.nameModified = false;
+            ChatServer.chatName = newChatName;
+        } catch (Error error) {
+            System.out.println(error);
+        }
+    }
+
     public void removeUser(String user) {
         try {
-//            synchronized (this) {
-                for (int i = 0; i < maxClientsCount; i++) {
-                    if (threads[i] != null) {
-                        threads[i].os.println(msgName + " removed " + user + " from the chat");
-                    }
-
-                    if (threads[i] != null && threads[i] != this
-                            && threads[i].clientName != null
-                            && threads[i].msgName.equals(user)) {
-
-                        threads[i].os.println("You have been removed from the chat by " + msgName);
-                        threads[i].os.close();
-                        ChatServer.numParticipants--;
-                        break;
-                    }
+            for (int i = 0; i < maxClientsCount; i++) {
+                if (threads[i] != null) {
+                    threads[i].os.println(msgName + " removed " + user + " from the chat");
                 }
-//            }
-        } catch (Error error) {
 
+                if (threads[i] != null && threads[i] != this
+                        && threads[i].clientName != null
+                        && threads[i].msgName.equals(user)) {
+
+                    threads[i].os.println("You have been removed from the chat by " + msgName);
+                    threads[i].os.close();
+                    ChatServer.numParticipants--;
+                    break;
+                }
+            }
+        } catch (Error error) {
+            this.os.println("There was an error removing " + user + ". ERROR: " + error);
         }
     }
 
     public void run() {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
-
-
 
         try {
 
@@ -185,6 +224,14 @@ class clientThread extends Thread {
                     os.println("The name should not contain '@' character.");
                 }
 
+            }
+
+            if (!ChatServer.nameModified) {
+                if (ChatServer.chatName.length() <= 0) {
+                    ChatServer.chatName = name;
+                } else {
+                    ChatServer.chatName = name + ", " + ChatServer.chatName;
+                }
             }
 
 
@@ -210,6 +257,44 @@ class clientThread extends Thread {
                 String line = is.readLine();
 
                 // Chat commands
+
+
+                //view chat name
+                try {
+                    if (line.startsWith(commands.get("VIEW_CHAT_NAME"))) {
+                        viewChatName();
+                        continue;
+                    }
+                } catch (Error error) {
+                    System.out.println(error);
+                }
+
+                //change chat name
+                try {
+                    if (line.startsWith(commands.get("CHANGE_CHAT_NAME"))) {
+                        String[] message = line.split("\\s", 2);
+                        if (message.length > 1 && message[1] != null) {
+                            message[1] = message[1].trim();
+                            if (!message[1].isEmpty()) {
+                                changeChatName(message[1]);
+                            }
+                        }
+                        continue;
+                    }
+                } catch (Error error){
+
+                }
+
+                //reset chat name
+                try {
+                    if (line.startsWith(commands.get("RESET_CHAT_NAME"))) {
+                        removeChatName();
+                        continue;
+                    }
+
+                } catch (Error error) {
+
+                }
 
                 //quit chat
                 try {
@@ -265,6 +350,7 @@ class clientThread extends Thread {
 
                 String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());
 
+                // private message
                 if (line.startsWith("@")) {
                     String[] words = line.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
@@ -275,9 +361,12 @@ class clientThread extends Thread {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {
+                                        threads[i].os.println("----------------------------------------");
+                                        this.os.println("----------------------------------------");
                                         threads[i].os.println(msgTime + " <PM> [" + name + "] " + words[1]);
-
                                         this.os.println("[" + name + "] (to:" + words[0] + ") " + words[1]);
+                                        threads[i].os.println("----------------------------------------");
+                                        this.os.println("----------------------------------------");
                                         break;
                                     }
                                 }

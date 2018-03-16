@@ -27,6 +27,7 @@ public class ChatServer {
     public static int numParticipants = 0;
     public static String chatName = "";
     public static boolean nameModified = false;
+    public static ChatActions chat = new ChatActions();
 
     public static void main(String args[]) {
 
@@ -83,6 +84,8 @@ class clientThread extends Thread {
     private Socket clientSocket = null;
     private final clientThread[] threads;
     private int maxClientsCount;
+    private int idNumber;
+
 
     private HashMap<String, String> commands;
     private HashMap<Integer, String> specialCharacters;
@@ -108,11 +111,39 @@ class clientThread extends Thread {
 
     }
 
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public DataInputStream getIs() {
+        return is;
+    }
+
+    public PrintStream getOs() {
+        return os;
+    }
+
+    public clientThread[] getThreads() {
+        return threads;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public String getMsgName() {
+        return msgName;
+    }
+
+    public int getIdNumber() {
+        return idNumber;
+    }
+
     public void shutdownServer(String name) {
         try {
             System.out.println(name + " has shut down server");
             System.out.println("Shutting down the server...");
-            for (int i = 0; i < ChatServer.numParticipants ; i++) {
+            for (int i = 0; i < ChatServer.numParticipants; i++) {
                 threads[i].os.println("Shutting down server...");
                 threads[i].os.println(name + " has shut down server");
 
@@ -140,67 +171,6 @@ class clientThread extends Thread {
         }
     }
 
-    public void viewChatName() {
-        try {
-            os.println("------ " + ChatServer.chatName + " ------");
-        } catch (Error error) {
-            os.println(error);
-        }
-    }
-
-    public void changeChatName(String chatName) {
-        try {
-            ChatServer.chatName = chatName;
-            ChatServer.nameModified = true;
-            for (int i = 0; i < maxClientsCount; i++) {
-                if (threads[i] != null) {
-                    threads[i].os.println(msgName + "changed the chat name to: " + ChatServer.chatName);
-                }
-            }
-
-
-        } catch (Error error) {
-            System.out.println(error);
-        }
-    }
-
-    public void removeChatName() {
-        try {
-            String newChatName = threads[0].msgName;
-            for (int i = 1; i < maxClientsCount; i++) {
-                if (threads[i] != null) {
-                     newChatName +=  ", " + threads[i].msgName;
-                     threads[i-1].os.println(msgName + " removed the chat name");
-                }
-            }
-            ChatServer.nameModified = false;
-            ChatServer.chatName = newChatName;
-        } catch (Error error) {
-            System.out.println(error);
-        }
-    }
-
-    public void removeUser(String user) {
-        try {
-            for (int i = 0; i < maxClientsCount; i++) {
-                if (threads[i] != null) {
-                    threads[i].os.println(msgName + " removed " + user + " from the chat");
-                }
-
-                if (threads[i] != null && threads[i] != this
-                        && threads[i].clientName != null
-                        && threads[i].msgName.equals(user)) {
-
-                    threads[i].os.println("You have been removed from the chat by " + msgName);
-                    threads[i].os.close();
-                    ChatServer.numParticipants--;
-                    break;
-                }
-            }
-        } catch (Error error) {
-            this.os.println("There was an error removing " + user + ". ERROR: " + error);
-        }
-    }
 
     public void run() {
         int maxClientsCount = this.maxClientsCount;
@@ -227,17 +197,14 @@ class clientThread extends Thread {
 
             }
 
-            if (!ChatServer.nameModified) {
-                if (ChatServer.chatName.length() <= 0) {
-                    ChatServer.chatName = name;
-                } else {
-                    ChatServer.chatName = name + ", " + ChatServer.chatName;
-                }
-            }
+
 
 
             os.println("Welcome " + name
                     + " to the conversation.\nTo leave enter /quit in a new line.");
+
+            ChatServer.chat.addUser(name);
+
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] != null && threads[i] == this) {
@@ -258,96 +225,33 @@ class clientThread extends Thread {
                 String line = is.readLine();
 
                 // Chat commands
-
-
-                //view chat name
-                try {
-                    if (line.startsWith(commands.get("VIEW_CHAT_NAME"))) {
-                        viewChatName();
-                        continue;
-                    }
-                } catch (Error error) {
-                    System.out.println(error);
+                if (line.startsWith("/")) {
+                    System.out.println("Action Item");
+                    ChatServer.chat.handleAction(line, this);
                 }
 
-                //change chat name
-                try {
-                    if (line.startsWith(commands.get("CHANGE_CHAT_NAME"))) {
-                        String[] message = line.split("\\s", 2);
-                        if (message.length > 1 && message[1] != null) {
-                            message[1] = message[1].trim();
-                            if (!message[1].isEmpty()) {
-                                changeChatName(message[1]);
-                            }
-                        }
-                        continue;
-                    }
-                } catch (Error error){
 
-                }
+//                //shutdown server
+//                try {
+//                    if (line.startsWith(commands.get("SHUTDOWN_SERVER"))) {
+//                        os.println("You have shutdown the server");
+//                        shutdownServer(name);
+//                    }
+//                } catch (Error error) {
+//                    System.out.println("There was error shutting down the server.");
+//                    System.out.println(error);
+//                }
+//
+//                //view participants
+//                try {
+//                    if (line.startsWith(commands.get("VIEW_MEMBERS"))) {
+//                        viewMembers();
+//                        continue;
+//                    }
+//                } catch (Error error) {
+//                    System.out.println(error);
+//                }
 
-                //reset chat name
-                try {
-                    if (line.startsWith(commands.get("RESET_CHAT_NAME"))) {
-                        removeChatName();
-                        continue;
-                    }
-
-                } catch (Error error) {
-
-                }
-
-                //quit chat
-                try {
-                    if (line.startsWith(commands.get("LEAVE_CHAT"))) {
-                        ChatServer.numParticipants--;
-                        break;
-                    }
-                } catch(Error error) {}
-
-                //shutdown server
-                try {
-                    if (line.startsWith(commands.get("SHUTDOWN_SERVER"))) {
-                        os.println("You have shutdown the server");
-                        shutdownServer(name);
-                    }
-                } catch (Error error) {
-                    System.out.println("There was error shutting down the server.");
-                    System.out.println(error);
-                }
-
-                //view participants
-                try {
-                    if (line.startsWith(commands.get("VIEW_MEMBERS"))) {
-                        viewMembers();
-                        continue;
-                    }
-                } catch (Error error) {
-                    System.out.println(error);
-                }
-
-                //remove user
-                try {
-                    if (line.startsWith(commands.get("REMOVE_USER"))) {
-                        String[] message = line.split("\\s", 2);
-                        if (message.length > 1 && message[1] != null) {
-                            message[1] = message[1].trim();
-                            if (!message[1].isEmpty()) {
-                                if (message[1].equals(msgName)) {
-                                    os.println("Please use /quit to leave the chat");
-                                } else {
-                                    os.println(msgName + " removed " + message[1] + " from the chat");
-                                    removeUser(message[1]);
-                                }
-
-                            }
-                        }
-                        continue;
-                    }
-
-                } catch (Error error) {
-                    System.out.println(error);
-                }
 
                 String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());
 
@@ -386,27 +290,6 @@ class clientThread extends Thread {
                     }
                 }
             }
-            synchronized (this) {
-                for (int i = 0; i < maxClientsCount; i++) {
-                    if (threads[i] != null && threads[i] != this
-                            && threads[i].clientName != null) {
-                        threads[i].os.println("*** The user " + name
-                                + " is leaving the chat room ***");
-                    }
-                }
-            }
-            os.println("*** Goodbye " + name + " ***");
-            synchronized (this) {
-                for (int i = 0; i < maxClientsCount; i++) {
-                    if (threads[i] == this) {
-                        threads[i] = null;
-                    }
-                }
-            }
-
-            is.close();
-            os.close();
-            clientSocket.close();
         } catch (IOException e) {
         }
     }

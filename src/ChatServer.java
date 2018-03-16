@@ -154,7 +154,7 @@ class clientThread extends Thread {
             ChatServer.nameModified = true;
             for (int i = 0; i < maxClientsCount; i++) {
                 if (threads[i] != null) {
-                    threads[i].os.println("Chat Name updated to: " + ChatServer.chatName);
+                    threads[i].os.println(msgName + "changed the chat name to: " + ChatServer.chatName);
                 }
             }
 
@@ -166,10 +166,11 @@ class clientThread extends Thread {
 
     public void removeChatName() {
         try {
-            String newChatName = "";
-            for (int i = 0; i < maxClientsCount; i++) {
+            String newChatName = threads[0].msgName;
+            for (int i = 1; i < maxClientsCount; i++) {
                 if (threads[i] != null) {
-                     newChatName += ", " + threads[i].msgName;
+                     newChatName +=  ", " + threads[i].msgName;
+                     threads[i-1].os.println(msgName + " removed the chat name");
                 }
             }
             ChatServer.nameModified = false;

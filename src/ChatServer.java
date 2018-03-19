@@ -149,7 +149,6 @@ class clientThread extends Thread {
 
                 System.out.println("Server shutdown initiated...");
                 System.out.println("Server shutting down...");
-                System.out.println("Server has shut down...");
 
             }
             System.exit(0);
@@ -204,6 +203,8 @@ class clientThread extends Thread {
                     + " to the conversation.\nTo leave enter /quit in a new line.");
 
             ChatServer.chat.addUser(name);
+            System.out.print("clientThread.run  -- ");
+            System.out.println("LIST OF USERS: " + ChatServer.chat.getChat().getUsers());
 
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
@@ -228,6 +229,7 @@ class clientThread extends Thread {
                 if (line.startsWith("/")) {
                     System.out.println("Action Item");
                     ChatServer.chat.handleAction(line, this);
+                    continue;
                 }
 
 

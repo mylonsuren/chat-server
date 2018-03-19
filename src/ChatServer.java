@@ -259,12 +259,14 @@ class clientThread extends Thread {
 
                 // private message
                 if (line.startsWith("@")) {
+                    System.out.println("@ PRIVATE TRIGGERED");
                     String[] words = line.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
                                 for (int i = 0; i < maxClientsCount; i++) {
+                                    System.out.println("SENDING @ MESSAGE");
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {

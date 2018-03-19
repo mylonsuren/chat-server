@@ -41,6 +41,7 @@ public class Chat {
 
     public void setChatName(String chatName) {
         this.chatName = chatName;
+        this.chatNameModified = true;
     }
 
 
@@ -51,8 +52,8 @@ public class Chat {
 
     public void resetChatName() {
         generateChatName();
+        this.chatNameModified = false;
     }
-
 
     public void removeUser(int id) {
         users.remove(id);

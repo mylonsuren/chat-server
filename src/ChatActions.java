@@ -1,6 +1,8 @@
 
 import java.util.HashMap;
 import java.io.*;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ChatActions {
 
@@ -28,7 +30,7 @@ public class ChatActions {
             System.out.println("parseActionMessage --> DONE");
             chatName();
             System.out.println("chatName --> DONE");
-        } else if (action.startsWith("/user")) {
+        } else if (action.startsWith("/users")) {
             parseActionMessage();
             userManagement();
         } else if (action.startsWith("/quit")) {
@@ -65,7 +67,8 @@ public class ChatActions {
         commands.put("REMOVE_CHAT_NAME", "/chat-name-remove");
         commands.put("SET_CHAT_NAME", "/chat-name-set");
 
-        commands.put("REMOVE_USER", "/user-remove");
+        commands.put("REMOVE_USER", "/users-remove");
+        commands.put("VIEW_USERS", "/users-view");
 
         commands.put("LEAVE_CHAT", "/quit");
     }
@@ -119,7 +122,25 @@ public class ChatActions {
 
     private void userManagement() {
         if (action.equals(commands.get("REMOVE_USER"))) {
+            System.out.println("REMOVE_USER");
             removeUser(client.getThreads(), actionMessage);
+        } else if (action.equals(commands.get("VIEW_USERS"))) {
+            System.out.println("VIEW_USERS");
+            viewUsers();
+        }
+    }
+
+    private void viewUsers() {
+        try {
+            System.out.println("ChatActions.viewUsers");
+            printToClient("CURRENT PARTICIPANTS: ");
+            Iterator it = chat.getUsers().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                printToClient(pair.getKey() + " - " + chat.getUsers().get(pair.getKey()).getName());
+            }
+        } catch (Error error) {
+            System.out.println(error);
         }
     }
 

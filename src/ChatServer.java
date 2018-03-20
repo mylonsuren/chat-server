@@ -243,16 +243,6 @@ class clientThread extends Thread {
 //                    System.out.println("There was error shutting down the server.");
 //                    System.out.println(error);
 //                }
-//
-//                //view participants
-//                try {
-//                    if (line.startsWith(commands.get("VIEW_MEMBERS"))) {
-//                        viewMembers();
-//                        continue;
-//                    }
-//                } catch (Error error) {
-//                    System.out.println(error);
-//                }
 
 
                 String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());

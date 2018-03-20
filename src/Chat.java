@@ -77,4 +77,8 @@ public class Chat {
     public HashMap<Integer, User> getUsers() {
         return users;
     }
+
+    public int getNumParticipants() {
+        return numParticipants;
+    }
 }

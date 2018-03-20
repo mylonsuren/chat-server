@@ -36,6 +36,9 @@ public class ChatActions {
         } else if (action.startsWith("/quit")) {
             System.out.println("quit --> DONE");
             quitChat();
+        } else if (action.startsWith("/shutdown")) {
+            serverShutdown();
+            System.out.println("serverSHUTDOWN --> DONE");
         } else {
             System.out.println("INVALID ACTION");
             return;
@@ -71,6 +74,35 @@ public class ChatActions {
         commands.put("VIEW_USERS", "/users-view");
 
         commands.put("LEAVE_CHAT", "/quit");
+
+        commands.put("SHUT_DOWN", "/shutdown");
+    }
+
+    private void serverShutdown() {
+
+        try {
+            clientThread[] threads = client.getThreads();
+
+            System.out.println(client.getMsgName() + " has shut down server");
+            System.out.println("Shutting down the server...");
+            for (int i = 0; i < chat.getNumParticipants(); i++) {
+                threads[i].getOs().println("Shutting down server...");
+                threads[i].getOs().println(client.getMsgName() + " has shut down server");
+
+                threads[i].getIs().close();
+                threads[i].getOs().close();
+                threads[i].getClientSocket().close();
+
+            }
+
+            System.out.println("Server shutdown initiated...");
+            System.out.println("Server shutting down...");
+            System.exit(0);
+
+        } catch (IOException error) {
+            System.out.println("Shutdown server failed.");
+            System.out.println(error);
+        }
     }
 
     private void quitChat() {

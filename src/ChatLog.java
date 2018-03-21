@@ -13,7 +13,7 @@ class error extends LogComponent implements LogFns {
     }
     @Override
     public void execute() {
-        System.out.println("ERROR | " + time + " | " + title + " | " + log);
+        System.err.println("ERROR | " + time + " | " + title + " | " + log);
     }
 }
 

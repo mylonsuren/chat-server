@@ -35,8 +35,8 @@ public class ChatClient extends Applet implements Runnable {
         String host = "localhost";
 
         if (args.length < 2) {
-            //System.out.println("Usage: java MultiThreadChatClient <host> <portNumber>\n"
-//                    + "Now using host=" + host + ", portNumber=" + portNumber);
+            System.out.println("Usage: java MultiThreadChatClient <host> <portNumber>\n"
+                    + "Now using host=" + host + ", portNumber=" + portNumber);
         } else {
             host = args[0];
             portNumber = Integer.valueOf(args[1]).intValue();
@@ -80,7 +80,7 @@ public class ChatClient extends Applet implements Runnable {
         String responseLine;
         try {
             while ((responseLine = is.readLine()) != null) {
-                //System.out.println(responseLine);
+                System.out.println(responseLine);
                 if (responseLine.indexOf("*** Bye") != -1) {
                     break;
                 } else if (responseLine.contains("Sorry, the conversation has reached its maximum number of participants")) {

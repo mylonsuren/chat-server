@@ -12,6 +12,7 @@ public class Chat {
 
     private String chatName;
     private User newUser;
+    private ChatLog logger = new ChatLog();
     private boolean chatNameModified = false;
 
     public Chat () {
@@ -24,6 +25,7 @@ public class Chat {
         try {
             chatName = "";
             //System.out.println("Chat.generateChatName");
+            logger.log("INFO", "Chat.generateChatName", "Creating new chat name");
             //System.out.println("USERS: " + users);
             //System.out.println("NAME: " + chatName);
 
@@ -33,9 +35,12 @@ public class Chat {
                 chatName += users.get(pair.getKey()).getName() + ", ";
             }
 
+            logger.log("SUCCESS", "Chat.generateChatName", "New chat name successfully created");
             //System.out.println(chatName);
         } catch (Error error) {
             //System.out.println(error);
+            logger.log("ERROR", "Chat.generateChatName", error.toString());
+
         }
     }
 

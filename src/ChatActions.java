@@ -30,35 +30,30 @@ public class ChatActions {
         this.action = message;
         if (action.startsWith("/chat-name")) {
             parseActionMessage();
-            System.out.println("parseActionMessage --> DONE");
-            logger.log("ERROR", "NOW", "parseAction", "successful method call");
+            //System.out.println("parseActionMessage --> DONE");
             chatName();
-            System.out.println("chatName --> DONE");
+            //System.out.println("chatName --> DONE");
         } else if (action.startsWith("/users")) {
             parseActionMessage();
-            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             userManagement();
         } else if (action.startsWith("/quit")) {
-            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
-            System.out.println("quit --> DONE");
+            //System.out.println("quit --> DONE");
             quitChat();
         } else if (action.startsWith("/shutdown")) {
-            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             serverShutdown();
-            System.out.println("serverSHUTDOWN --> DONE");
+            //System.out.println("serverSHUTDOWN --> DONE");
         } else {
-            System.out.println("INVALID ACTION");
-            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
+            //System.out.println("INVALID ACTION");
             return;
         }
     }
 
     private void parseActionMessage() {
         String[] message = action.split("\\s", 2);
-        System.out.println("ChatActions.parseActionMessage");
-        System.out.println("ACTION = " + message[0]);
+        //System.out.println("ChatActions.parseActionMessage");
+        //System.out.println("ACTION = " + message[0]);
         if (message.length > 1 && message[1] != null) {
-            System.out.println("ACTION PARAMETER = " + message[1]);
+            //System.out.println("ACTION PARAMETER = " + message[1]);
             message[1] = message[1].trim();
             if (!message[1].isEmpty()) {
                 actionMessage = message[1];
@@ -68,9 +63,9 @@ public class ChatActions {
     }
 
     private void printToClient(String message) {
-        System.out.println("ChatActions.printToClient");
+        //System.out.println("ChatActions.printToClient");
         client.getOs().println(message);
-        System.out.println("PRINT TO CLIENT --> DONE");
+        //System.out.println("PRINT TO CLIENT --> DONE");
     }
 
     private void initiateCommands() {
@@ -91,8 +86,8 @@ public class ChatActions {
         try {
             clientThread[] threads = client.getThreads();
 
-            System.out.println(client.getMsgName() + " has shut down server");
-            System.out.println("Shutting down the server...");
+            //System.out.println(client.getMsgName() + " has shut down server");
+            //System.out.println("Shutting down the server...");
             for (int i = 0; i < chat.getNumParticipants(); i++) {
                 threads[i].getOs().println("Shutting down server...");
                 threads[i].getOs().println(client.getMsgName() + " has shut down server");
@@ -103,13 +98,13 @@ public class ChatActions {
 
             }
 
-            System.out.println("Server shutdown initiated...");
-            System.out.println("Server shutting down...");
+            //System.out.println("Server shutdown initiated...");
+            //System.out.println("Server shutting down...");
             System.exit(0);
 
         } catch (IOException error) {
-            System.out.println("Shutdown server failed.");
-            System.out.println(error);
+            //System.out.println("Shutdown server failed.");
+            //System.out.println(error);
         }
     }
 
@@ -136,43 +131,43 @@ public class ChatActions {
             client.getClientSocket().close();
 
         } catch (IOException error) {
-            System.out.println(error);
+            //System.out.println(error);
         }
 
     }
 
     private void chatName() {
-        System.out.println("ChatActions.chatName");
-        System.out.println("ACTION: " + action);
+        //System.out.println("ChatActions.chatName");
+        //System.out.println("ACTION: " + action);
         if (action.equals(commands.get("VIEW_CHAT_NAME"))) {
-            System.out.println("VIEW_CHAT_NAME");
+            //System.out.println("VIEW_CHAT_NAME");
             String chatName = chat.getChatName();
-            System.out.println(chatName);
+            //System.out.println(chatName);
             printToClient(chatName);
         } else if (action.equals(commands.get("REMOVE_CHAT_NAME"))) {
-            System.out.println("REMOVE_CHAT_NAME");
+            //System.out.println("REMOVE_CHAT_NAME");
             chat.resetChatName();
         } else if (action.equals(commands.get("SET_CHAT_NAME"))) {
-            System.out.println("SET_CHAT_NAME: " + actionMessage);
+            //System.out.println("SET_CHAT_NAME: " + actionMessage);
             chat.setChatName(actionMessage);
         } else {
-            System.out.println("ChatActions.chatName --> NO RESPONSE");
+            //System.out.println("ChatActions.chatName --> NO RESPONSE");
         }
     }
 
     private void userManagement() {
         if (action.equals(commands.get("REMOVE_USER"))) {
-            System.out.println("REMOVE_USER");
+            //System.out.println("REMOVE_USER");
             removeUser(client.getThreads(), actionMessage);
         } else if (action.equals(commands.get("VIEW_USERS"))) {
-            System.out.println("VIEW_USERS");
+            //System.out.println("VIEW_USERS");
             viewUsers();
         }
     }
 
     private void viewUsers() {
         try {
-            System.out.println("ChatActions.viewUsers");
+            //System.out.println("ChatActions.viewUsers");
             printToClient("CURRENT PARTICIPANTS: ");
             Iterator it = chat.getUsers().entrySet().iterator();
             while (it.hasNext()) {
@@ -180,7 +175,7 @@ public class ChatActions {
                 printToClient(pair.getKey() + " - " + chat.getUsers().get(pair.getKey()).getName());
             }
         } catch (Error error) {
-            System.out.println(error);
+            //System.out.println(error);
         }
     }
 
@@ -202,16 +197,16 @@ public class ChatActions {
 
 
     public void addUser(String name) {
-        System.out.println("ChatActions.addUser");
-        System.out.println("USER: " + name);
+        //System.out.println("ChatActions.addUser");
+        //System.out.println("USER: " + name);
 
-        System.out.println("USERS: " + chat.getUsers());
+        //System.out.println("USERS: " + chat.getUsers());
 
         chat.addUser(name);
         if (!chat.isChatNameModified()) {
             chat.resetChatName();
         }
-        System.out.println("USER ADDED --> DONE");
+        //System.out.println("USER ADDED --> DONE");
     }
 
 

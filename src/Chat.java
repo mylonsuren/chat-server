@@ -23,9 +23,9 @@ public class Chat {
     private void generateChatName() {
         try {
             chatName = "";
-            System.out.println("Chat.generateChatName");
-            System.out.println("USERS: " + users);
-            System.out.println("NAME: " + chatName);
+            //System.out.println("Chat.generateChatName");
+            //System.out.println("USERS: " + users);
+            //System.out.println("NAME: " + chatName);
 
             Iterator it = users.entrySet().iterator();
             while (it.hasNext()) {
@@ -33,9 +33,9 @@ public class Chat {
                 chatName += users.get(pair.getKey()).getName() + ", ";
             }
 
-            System.out.println(chatName);
+            //System.out.println(chatName);
         } catch (Error error) {
-            System.out.println(error);
+            //System.out.println(error);
         }
     }
 
@@ -46,7 +46,7 @@ public class Chat {
 
 
     public String getChatName() {
-        System.out.println("Chat.getChatName: " + chatName);
+        //System.out.println("Chat.getChatName: " + chatName);
         return chatName;
     }
 

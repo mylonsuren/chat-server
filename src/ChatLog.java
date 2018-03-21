@@ -8,29 +8,40 @@ interface LogFns {
 }
 
 class error extends LogComponent implements LogFns {
-    public error(String time, String title, String log) {
-        super(time,title, log);
+    public error(String title, String log) {
+        super(title, log);
     }
     @Override
     public void execute() {
-        System.out.println("ERROR LOGGING");
-        System.out.println(time  + ": " + title + " -- " + log);
+        System.out.println("ERROR | " + time + " | " + title + " | " + log);
     }
 }
 
 class success extends LogComponent implements LogFns {
-    public success(String time, String title, String log) {
-        super(time, title, log);
+    public success(String title, String log) {
+        super(title, log);
     }
     @Override
     public void execute() {
-        System.out.println("SUCCESS LOGGING");
-        System.out.println(time + ": " + title + " -- " + log);
+        System.out.println("SUCCESS | " + time + " | " + title + " | " + log);
+    }
+}
+
+class info extends LogComponent implements LogFns {
+    public info(String title, String log) {
+        super(title, log);
+    }
+
+    @Override
+    public void execute() {
+        System.out.println("INFO | " + time + " | " + title + " | " + log);
     }
 }
 
 
 public class ChatLog {
+
+    public Utils utils;
 
     private HashMap<String, LogComponent> logs;
 
@@ -41,10 +52,9 @@ public class ChatLog {
     private String type;
 
     public ChatLog() {
+        this.utils = new Utils();
         logs = new HashMap<>();
         logType = new HashMap<>();
-
-
     }
 
     public HashMap<String, LogFns> getLogType() {
@@ -52,12 +62,15 @@ public class ChatLog {
     }
 
 
-    public void log(String type, String time, String title, String log) {
+    public void log(String type, String title, String log) {
 
-        logType.put("ERROR", new error(time, title, log));
-        logType.put("SUCCESS", new success(time, title, log));
+        logType.put("ERROR", new error(title, log));
+        logType.put("SUCCESS", new success(title, log));
+        logType.put("INFO", new info(title, log));
 
         this.message = new LogComponent(title, log);
+
+        String time = utils.getTime("hours:minutes");
 
         logs.put(time, message);
 
@@ -76,6 +89,9 @@ public class ChatLog {
 
 
 class LogComponent {
+
+    private Utils utils = new Utils();
+
     String title;
     String log;
     String time;
@@ -83,12 +99,8 @@ class LogComponent {
     public LogComponent(String title, String log) {
         this.log = log;
         this.title = title;
+        this.time = utils.getTime("hours:minutes");
     }
 
-    public LogComponent(String time, String title, String log) {
-        this.log = log;
-        this.title = title;
-        this.time = time;
-    }
 }
 

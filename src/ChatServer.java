@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 
 public class ChatServer {
@@ -28,15 +29,19 @@ public class ChatServer {
     public static String chatName = "";
     public static boolean nameModified = false;
     public static ChatActions chat = new ChatActions();
+    public static ChatLog logger = new ChatLog();
 
     public static void main(String args[]) {
 
         // The default port number.
         int portNumber = 2222;
         if (args.length < 1) {
-            System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
-                    + "Now using port number=" + portNumber);
-            System.out.println("Server is now running on port 2222...");
+            //System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
+//                    + "Now using port number=" + portNumber);
+            String portNumberString = Integer.toString(portNumber);
+            logger.log("INFO","USAGE", "java MultiThreadChatServerSync <portNumber>");
+            logger.log("INFO","USAGE", "Now using port number=" + portNumberString);
+            //System.out.println("Server is now running on port 2222...");
         } else {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
@@ -44,7 +49,8 @@ public class ChatServer {
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
-            System.out.println(e);
+            //System.out.println(e);
+            logger.log("ERROR", "USAGE", e.toString());
         }
 
 
@@ -63,12 +69,12 @@ public class ChatServer {
                 if (i == maxClientsCount) {
                     PrintStream os = new PrintStream(clientSocket.getOutputStream());
                     os.println("Server too busy. Try later.");
-                    System.out.println("Server has reached capacity...");
+                    //System.out.println("Server has reached capacity...");
                     os.close();
                     clientSocket.close();
                 }
             } catch (IOException e) {
-                System.out.println(e);
+                //System.out.println(e);
             }
         }
     }
@@ -173,7 +179,7 @@ class clientThread extends Thread {
 
             ChatServer.chat.addUser(name);
             System.out.print("clientThread.run  -- ");
-            System.out.println("LIST OF USERS: " + ChatServer.chat.getChat().getUsers());
+            //System.out.println("LIST OF USERS: " + ChatServer.chat.getChat().getUsers());
 
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
@@ -196,7 +202,7 @@ class clientThread extends Thread {
 
                 // Chat commands
                 if (line.startsWith("/")) {
-                    System.out.println("Action Item");
+                    //System.out.println("Action Item");
                     ChatServer.chat.handleAction(line, this);
                     continue;
                 }
@@ -205,14 +211,14 @@ class clientThread extends Thread {
 
                 // private message
                 if (line.startsWith("@")) {
-                    System.out.println("@ PRIVATE TRIGGERED");
+                    ////System.out.println("@ PRIVATE TRIGGERED");
                     String[] words = line.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
                                 for (int i = 0; i < maxClientsCount; i++) {
-                                    System.out.println("SENDING @ MESSAGE");
+                                    ////System.out.println("SENDING @ MESSAGE");
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {
@@ -244,3 +250,4 @@ class clientThread extends Thread {
         }
     }
 }
+

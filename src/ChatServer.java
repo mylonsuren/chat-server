@@ -139,37 +139,6 @@ class clientThread extends Thread {
         return idNumber;
     }
 
-    public void shutdownServer(String name) {
-        try {
-            System.out.println(name + " has shut down server");
-            System.out.println("Shutting down the server...");
-            for (int i = 0; i < ChatServer.numParticipants; i++) {
-                threads[i].os.println("Shutting down server...");
-                threads[i].os.println(name + " has shut down server");
-
-                System.out.println("Server shutdown initiated...");
-                System.out.println("Server shutting down...");
-
-            }
-            System.exit(0);
-        } catch (Error error) {
-            System.out.println("There was error shutting down the server.");
-            System.out.println(error);
-        }
-    }
-
-    public void viewMembers() {
-
-        try {
-            os.println(("Current Participants: "));
-            for (int i = 0; i < ChatServer.numParticipants; i++) {
-                os.println(i+1 + " - " + threads[i].msgName);
-            }
-        } catch (Error error) {
-            os.println((error));
-        }
-    }
-
 
     public void run() {
         int maxClientsCount = this.maxClientsCount;
@@ -231,19 +200,6 @@ class clientThread extends Thread {
                     ChatServer.chat.handleAction(line, this);
                     continue;
                 }
-
-
-//                //shutdown server
-//                try {
-//                    if (line.startsWith(commands.get("SHUTDOWN_SERVER"))) {
-//                        os.println("You have shutdown the server");
-//                        shutdownServer(name);
-//                    }
-//                } catch (Error error) {
-//                    System.out.println("There was error shutting down the server.");
-//                    System.out.println(error);
-//                }
-
 
                 String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());
 

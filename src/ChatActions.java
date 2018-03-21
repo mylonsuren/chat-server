@@ -11,10 +11,13 @@ public class ChatActions {
     private clientThread client;
     private String actionMessage;
 
+    private ChatLog logger;
+
     private HashMap<String,String> commands = new HashMap<>();
 
     public ChatActions() {
         this.chat = new Chat();
+        this.logger = new ChatLog();
         initiateCommands();
     }
 
@@ -28,19 +31,24 @@ public class ChatActions {
         if (action.startsWith("/chat-name")) {
             parseActionMessage();
             System.out.println("parseActionMessage --> DONE");
+            logger.log("ERROR", "NOW", "parseAction", "successful method call");
             chatName();
             System.out.println("chatName --> DONE");
         } else if (action.startsWith("/users")) {
             parseActionMessage();
+            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             userManagement();
         } else if (action.startsWith("/quit")) {
+            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             System.out.println("quit --> DONE");
             quitChat();
         } else if (action.startsWith("/shutdown")) {
+            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             serverShutdown();
             System.out.println("serverSHUTDOWN --> DONE");
         } else {
             System.out.println("INVALID ACTION");
+            logger.log("SUCCESS", "NOW", "parseAction", "successful method call");
             return;
         }
     }

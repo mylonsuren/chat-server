@@ -1,18 +1,13 @@
 
 
-import java.io.*;
-import java.net.*;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Logger;
 
 
 public class ChatServer {
@@ -26,8 +21,6 @@ public class ChatServer {
     private static final int maxClientsCount = 10;
     private static final clientThread[] threads = new clientThread[maxClientsCount];
     public static int numParticipants = 0;
-    public static String chatName = "";
-    public static boolean nameModified = false;
     public static ChatActions chat = new ChatActions();
     public static ChatLog logger = new ChatLog();
 
@@ -36,12 +29,9 @@ public class ChatServer {
         // The default port number.
         int portNumber = 2222;
         if (args.length < 1) {
-            //System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n"
-//                    + "Now using port number=" + portNumber);
             String portNumberString = Integer.toString(portNumber);
-            logger.log("INFO","ChatServer.main", "java MultiThreadChatServerSync <portNumber>");
+            logger.log("INFO","ChatServer.main", "java MultiThreadChatServerSync <" + portNumberString + ">");
             logger.log("INFO","ChatServer.main", "Now using port number=" + portNumberString);
-            //System.out.println("Server is now running on port 2222...");
         } else {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
@@ -49,7 +39,6 @@ public class ChatServer {
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
-            //System.out.println(e);
             logger.log("ERROR", "USAGE", e.toString());
         }
 
@@ -69,14 +58,11 @@ public class ChatServer {
                 if (i == maxClientsCount) {
                     PrintStream os = new PrintStream(clientSocket.getOutputStream());
                     os.println("Server too busy. Try later.");
-                    //System.out.println("Server has reached capacity...");
-                    System.out.println("ChatServer.main");
                     logger.log("INFO", "ChatServer.main", "Server has reached capacity");
                     os.close();
                     clientSocket.close();
                 }
             } catch (IOException e) {
-                //System.out.println(e);
                 logger.log("ERROR", "ChatServer.main", e.toString());
             }
         }
@@ -182,8 +168,6 @@ class clientThread extends Thread {
                     + " to the conversation.\nTo leave enter /quit in a new line.");
 
             ChatServer.chat.addUser(name);
-//            System.out.print("clientThread.run  -- ");
-            //System.out.println("LIST OF USERS: " + ChatServer.chat.getChat().getUsers());
             String listOfUsers = ChatServer.chat.getChat().getUsers().toString();
             ChatServer.logger.log("INFO", "clientThread.run", "LIST OF USERS: " + listOfUsers);
 
@@ -208,7 +192,6 @@ class clientThread extends Thread {
 
                 // Chat commands
                 if (line.startsWith("/")) {
-                    //System.out.println("Action Item");
                     ChatServer.logger.log("INFO", "clientThread.run", "ACTION ITEM");
                     ChatServer.chat.handleAction(line, this);
                     continue;
@@ -218,7 +201,6 @@ class clientThread extends Thread {
 
                 // private message
                 if (line.startsWith("@")) {
-                    ////System.out.println("@ PRIVATE TRIGGERED");
                     ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");
                     String[] words = line.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
@@ -226,7 +208,6 @@ class clientThread extends Thread {
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
                                 for (int i = 0; i < maxClientsCount; i++) {
-                                    ////System.out.println("SENDING @ MESSAGE");
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {

@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.io.*;
+
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Chat {
 
@@ -24,10 +22,7 @@ public class Chat {
     private void generateChatName() {
         try {
             chatName = "";
-            //System.out.println("Chat.generateChatName");
             logger.log("INFO", "Chat.generateChatName", "Creating new chat name");
-            //System.out.println("USERS: " + users);
-            //System.out.println("NAME: " + chatName);
 
             Iterator it = users.entrySet().iterator();
             while (it.hasNext()) {
@@ -36,9 +31,7 @@ public class Chat {
             }
 
             logger.log("SUCCESS", "Chat.generateChatName", "New chat name successfully created");
-            //System.out.println(chatName);
         } catch (Error error) {
-            //System.out.println(error);
             logger.log("ERROR", "Chat.generateChatName", error.toString());
 
         }
@@ -51,7 +44,6 @@ public class Chat {
 
 
     public String getChatName() {
-        //System.out.println("Chat.getChatName: " + chatName);
         return chatName;
     }
 

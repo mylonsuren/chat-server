@@ -8,6 +8,8 @@ public class Chat {
 
     private HashMap<Integer, User> users;
 
+    private clientThread client;
+
     private String chatName;
     private User newUser;
     private ChatLog logger = new ChatLog();
@@ -40,8 +42,8 @@ public class Chat {
     public void setChatName(String chatName) {
         this.chatName = chatName;
         this.chatNameModified = true;
+        logger.log("SUCCESS", "Chat.setChatName", "Chat name changed to --> " + chatName);
     }
-
 
     public String getChatName() {
         return chatName;
@@ -50,17 +52,22 @@ public class Chat {
     public void resetChatName() {
         generateChatName();
         this.chatNameModified = false;
+        logger.log("SUCCESS", "Chat.resetChatName", "Chat name successfully reset");
     }
 
     public void removeUser(int id) {
         users.remove(id);
         numParticipants--;
+        logger.log("SUCCESS", "Chat.removeUser", "User " + id + " successfully removed");
     }
 
-    public void addUser(String name) {
+    public void addUser(String name, clientThread client) {
+        this.client = client;
         User newUser = new User(name);
         users.put(newUser.getId(), newUser);
+        client.setIdNumber(newUser.getId());
         numParticipants++;
+        logger.log("SUCCESS", "Chat.addUser", "New user " + newUser.getId() + " successfully joined");
     }
 
     public void setChatNameModified(boolean chatNameModified) {
@@ -74,6 +81,7 @@ public class Chat {
     public HashMap<Integer, User> getUsers() {
         return users;
     }
+
 
     public int getNumParticipants() {
         return numParticipants;

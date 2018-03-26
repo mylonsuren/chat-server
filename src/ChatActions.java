@@ -39,9 +39,11 @@ public class ChatActions {
             logger.log("INFO", "ChatActions.handleAction", "parseActionMessage --> DONE");
             userManagement();
         } else if (action.startsWith("/quit")) {
-            logger.log("INFO", "ChatActions.handleAction", "parseActionMessage --> DONE");
             quitChat();
             logger.log("SUCCESS", "ChatActions.handleAction", client.getIdNumber() + " : QUIT CHAT");
+        } else if (action.startsWith("/modify")) {
+            parseActionMessage();
+            modify();
         } else if (action.startsWith("/shutdown")) {
             serverShutdown();
             logger.log("SUCCESS", "ChatActions.handleAction", "SERVER SHUTDOWN");
@@ -51,10 +53,10 @@ public class ChatActions {
             return;
         }
         logger.log("SUCCESS", "ChatActions.handleAction", "ACTION COMPLETED");
-
     }
 
     private void parseActionMessage() {
+        actionMessage = null;
         String[] message = action.split("\\s", 2);
         logger.log("INFO", "ChatActions.parseActionMessage", "ACTION = " + message[0]);
         if (message.length > 1 && message[1] != null) {
@@ -81,9 +83,32 @@ public class ChatActions {
         commands.put("REMOVE_USER", "/users-remove");
         commands.put("VIEW_USERS", "/users-view");
 
+        commands.put("MODIFY_NAME", "/modify-name");
+
         commands.put("LEAVE_CHAT", "/quit");
 
         commands.put("SHUT_DOWN", "/shutdown");
+    }
+
+    private void modify() {
+        if (action.equals(commands.get("MODIFY_NAME"))) {
+            logger.log("INFO", "ChatActions.modify", "MODIFY_NAME");
+            modifyName();
+        }
+    }
+
+    private void modifyName() {
+        if (actionMessage != null) {
+            String currentName = client.getMsgName();
+            String newName = actionMessage;
+            client.setMsgName(newName);
+            chat.getUsers().get(client.getIdNumber()).setName(newName);
+            logger.log("INFO", "ChatActions.modifyName", "Current user name: " + currentName + ", new user name: " + newName);
+        } else {
+            System.out.println("HERERERE");
+            printToClient("Please provide a new name as well. (e.g. /modify-name John)\n");
+            logger.log("ERROR", "ChatActions.modifyName","No parameter provided");
+        }
     }
 
     private void serverShutdown() {
@@ -127,6 +152,7 @@ public class ChatActions {
         }
 
         chat.removeUser(client.getIdNumber());
+        logger.log("SUCCESS", "ChatActions.quitChat", "User " + client.getIdNumber() + " removed from user list");
 
         printToClient("*** Goodbye " + client.getMsgName() + " ***");
         try {
@@ -139,7 +165,6 @@ public class ChatActions {
             //System.out.println(error);
             logger.log("ERROR", "ChatActions.quitChat", error.toString());
         }
-
     }
 
     private void chatName() {
@@ -176,11 +201,13 @@ public class ChatActions {
     private void viewUsers() {
         try {
             logger.log("INFO", "ChatActions.viewUsers", "PRINTING USER LIST");
-            printToClient("CURRENT PARTICIPANTS: ");
+            printToClient("CURRENT PARTICIPANTS: \n");
             Iterator it = chat.getUsers().entrySet().iterator();
             while (it.hasNext()) {
+
                 Map.Entry pair = (Map.Entry)it.next();
-                printToClient(pair.getKey() + " - " + chat.getUsers().get(pair.getKey()).getName());
+                logger.log("INFO", "ChatActions.viewUsers", "USER --> " + pair.getKey());
+                printToClient("| " + pair.getKey().toString() + " - " + chat.getUsers().get(pair.getKey()).getName().toString() + " |\n");
             }
         } catch (Error error) {
             logger.log("ERROR", "ChatActions.viewUsers", error.toString());
@@ -206,9 +233,9 @@ public class ChatActions {
     }
 
 
-    public void addUser(String name) {
+    public void addUser(String name, clientThread client) {
         logger.log("INFO", "ChatActions.addUser", "ADD USER --> INITIATED");
-        chat.addUser(name);
+        chat.addUser(name, client);
         if (!chat.isChatNameModified()) {
             chat.resetChatName();
         }

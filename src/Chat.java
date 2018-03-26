@@ -67,7 +67,7 @@ public class Chat {
         users.put(newUser.getId(), newUser);
         client.setIdNumber(newUser.getId());
         numParticipants++;
-        logger.log("SUCCESS", "Chat.addUser", "New user " + newUser.getId() + " successfully joined");
+        logger.log("SUCCESS", "Chat.addUser", "New user |ID=" + newUser.getId() + "| successfully joined");
     }
 
     public void setChatNameModified(boolean chatNameModified) {

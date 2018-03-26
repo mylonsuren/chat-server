@@ -70,7 +70,7 @@ public class ChatLog {
 
         this.message = new LogComponent(title, log);
 
-        String time = utils.getTime("hours:minutes");
+        String time = utils.getTime("FULL_DATE");
 
         logs.put(time, message);
 
@@ -99,7 +99,7 @@ class LogComponent {
     public LogComponent(String title, String log) {
         this.log = log;
         this.title = title;
-        this.time = utils.getTime("hours:minutes");
+        this.time = utils.getTime("FULL_DATE");
     }
 
 }

@@ -130,10 +130,17 @@ class clientThread extends Thread {
         return msgName;
     }
 
+    public void setMsgName(String msgName) {
+        this.msgName = msgName;
+    }
+
     public int getIdNumber() {
         return idNumber;
     }
 
+    public void setIdNumber(int idNumber) {
+        this.idNumber = idNumber;
+    }
 
     public void run() {
         int maxClientsCount = this.maxClientsCount;
@@ -149,11 +156,11 @@ class clientThread extends Thread {
             while (true) {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT");
                 os.println("Enter your name:");
-                name = is.readLine().trim();
-                if (name.indexOf(specialCharacters.get(0)) == -1) {
+                msgName = is.readLine().trim();
+                if (msgName.indexOf(specialCharacters.get(0)) == -1) {
                     break;
                 }
-                else if (name.indexOf(specialCharacters.get(1)) == -1) {
+                else if (msgName.indexOf(specialCharacters.get(1)) == -1) {
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");
@@ -164,24 +171,23 @@ class clientThread extends Thread {
 
 
 
-            os.println("Welcome " + name
+            os.println("Welcome " + msgName
                     + " to the conversation.\nTo leave enter /quit in a new line.");
 
-            ChatServer.chat.addUser(name);
+            ChatServer.chat.addUser(msgName, this);
             String listOfUsers = ChatServer.chat.getChat().getUsers().toString();
             ChatServer.logger.log("INFO", "clientThread.run", "LIST OF USERS: " + listOfUsers);
 
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] != null && threads[i] == this) {
-                        clientName = "@" + name;
-                        msgName = name;
+                        clientName = "@" + msgName;
                         break;
                     }
                 }
                 for (int i = 0; i < maxClientsCount; i++) {
                     if (threads[i] != null && threads[i] != this) {
-                        threads[i].os.println("*** " +  name + " has joined the conversation. ***");
+                        threads[i].os.println("*** " +  msgName + " has joined the conversation. ***");
                     }
                 }
             }
@@ -197,7 +203,8 @@ class clientThread extends Thread {
                     continue;
                 }
 
-                String msgTime = new SimpleDateFormat("HH:mm").format(new java.util.Date());
+                String msgTime = new Utils().getTime("SHORT_DATE");
+
 
                 // private message
                 if (line.startsWith("@")) {
@@ -213,8 +220,8 @@ class clientThread extends Thread {
                                             && threads[i].clientName.equals(words[0])) {
                                         threads[i].os.println("----------------------------------------");
                                         this.os.println("----------------------------------------");
-                                        threads[i].os.println(msgTime + " <PM> [" + name + "] " + words[1]);
-                                        this.os.println("[" + name + "] (to:" + words[0] + ") " + words[1]);
+                                        threads[i].os.println(msgTime + " <PM> [" + msgName + "] " + words[1]);
+                                        this.os.println("[" + msgName + "] (to:" + words[0] + ") " + words[1]);
                                         threads[i].os.println("----------------------------------------");
                                         this.os.println("----------------------------------------");
                                         break;
@@ -229,7 +236,7 @@ class clientThread extends Thread {
 
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println(msgTime +  " [" + name + "] " + line);
+                                threads[i].os.println(msgTime +  " [" + msgName + "] " + line);
                             }
                         }
                     }

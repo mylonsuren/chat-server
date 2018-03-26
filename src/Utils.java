@@ -9,7 +9,8 @@ public class Utils {
 
     public Utils() {
         this.timeFormat = new HashMap<>();
-        this.timeFormat.put("hours:minutes", "HH:mm z");
+        this.timeFormat.put("SHORT_DATE", "HH:mm:ss z");
+        this.timeFormat.put("FULL_DATE", "yyyy-MM-dd HH:mm:ss z");
     }
 
     public String getTime(String format) {

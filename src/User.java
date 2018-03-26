@@ -7,11 +7,12 @@ public class User {
     private int id;
     private String name;
     private String timeJoined;
-
+    private ChatLog logger;
 
     public User(String name) {
+        this.logger = new ChatLog();
         this.name = name;
-        this.timeJoined = new SimpleDateFormat("HH:mm").format(new java.util.Date());;
+        this.timeJoined = new Utils().getTime("FULL_DATE");
         this.id = generateID();
     }
 
@@ -40,6 +41,7 @@ public class User {
     }
 
     private int generateID() {
+        logger.log("SUCCESS", "User.generateID", "ID successfully generated");
         return ThreadLocalRandom.current().nextInt(100, 999 + 1);
     }
 

@@ -16,17 +16,20 @@ public class ServerActions {
         this.serverCommands.put("SHUTDOWN", "/shutdown");
         this.serverCommands.put("CLEAR", "/clear");
         this.serverCommands.put("VIEW_USERS", "/view-users");
+        this.serverCommands.put("MESSAGES", "/messages");
         this.action = "";
     }
 
-    public void handleAction(String action, clientThread[] clients) {
-        if (action.startsWith("/shutdown")) {
+    public void handleAction(String action, clientThread[] clients, int messages) {
+        if (action.startsWith(serverCommands.get("SHUTDOWN"))) {
             shutdown();
-        } else if (action.startsWith("/clear")) {
+        } else if (action.startsWith(serverCommands.get("CLEAR"))) {
             logger.log("INFO", "ServerActions.handleAction", "CLEAR LOG");
             clearLog();
-        } else if (action.startsWith("/view-users")) {
+        } else if (action.startsWith(serverCommands.get("VIEW_USERS"))) {
             viewUsers(clients);
+        } else if (action.startsWith(serverCommands.get("MESSAGES"))) {
+            numberOfMessages(messages);
         }
     }
 
@@ -70,6 +73,10 @@ public class ServerActions {
                 System.out.println(" - " + users.get(i));
             }
         }
+    }
+
+    public void numberOfMessages (int messages) {
+        System.out.println("NUMBER OF MESSAGES = " + messages);
     }
 
 }

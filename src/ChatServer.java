@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 
 public class ChatServer {
@@ -24,6 +25,8 @@ public class ChatServer {
     public static ServerActions server = new ServerActions();
 
     public static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+    public static int messages;
 
     public static void main(String args[]) {
 
@@ -48,7 +51,7 @@ public class ChatServer {
                 try {
                     String text = input.readLine();
                     logger.log("INFO", "ChatServer.main | Thread 1", "INPUT = " + text);
-                    server.handleAction(text, threads);
+                    server.handleAction(text, threads, messages);
                 } catch (IOException error) {
                     logger.log("ERROR", "ChatServer.main | Thread 1", error.toString());
                 }
@@ -220,7 +223,7 @@ class clientThread extends Thread {
 
                 String msgTime = new Utils().getTime("SHORT_DATE");
 
-
+                ChatServer.messages += 1;
                 // private message
                 if (line.startsWith("@")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");

@@ -1,13 +1,11 @@
 
 
 
-import java.io.DataInputStream;
-import java.io.PrintStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.HashMap;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 
 public class ChatServer {
@@ -21,8 +19,16 @@ public class ChatServer {
     private static final int maxClientsCount = 10;
     private static final clientThread[] threads = new clientThread[maxClientsCount];
     public static int numParticipants = 0;
+
     public static ChatActions chat = new ChatActions();
     public static ChatLog logger = new ChatLog();
+    public static ServerActions server = new ServerActions();
+    public static Message message;
+
+    public static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+    public static int messages;
+    public static ArrayList<Message> conversation = new ArrayList<>();
 
     public static void main(String args[]) {
 
@@ -39,33 +45,49 @@ public class ChatServer {
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
-            logger.log("ERROR", "USAGE", e.toString());
+            logger.log("ERROR", "ChatServer.main", e.toString());
         }
 
-
-
-        while (true) {
-            try {
-                clientSocket = serverSocket.accept();
-                int i = 0;
-                for (i = 0; i < maxClientsCount; i++) {
-                    if (threads[i] == null) {
-                        (threads[i] = new clientThread(clientSocket, threads)).start();
-                        numParticipants++;
-                        break;
-                    }
+        Thread thread1 = new Thread (() -> {
+            while (true) {
+                try {
+                    String text = input.readLine();
+                    logger.log("INFO", "ChatServer.main | Thread 1", "INPUT = " + text);
+                    server.handleAction(text, threads, messages);
+                } catch (IOException error) {
+                    logger.log("ERROR", "ChatServer.main | Thread 1", error.toString());
                 }
-                if (i == maxClientsCount) {
-                    PrintStream os = new PrintStream(clientSocket.getOutputStream());
-                    os.println("Server too busy. Try later.");
-                    logger.log("INFO", "ChatServer.main", "Server has reached capacity");
-                    os.close();
-                    clientSocket.close();
-                }
-            } catch (IOException e) {
-                logger.log("ERROR", "ChatServer.main", e.toString());
             }
-        }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            while (true) {
+                try {
+                    clientSocket = serverSocket.accept();
+                    int i = 0;
+                    for (i = 0; i < maxClientsCount; i++) {
+                        if (threads[i] == null) {
+                            (threads[i] = new clientThread(clientSocket, threads)).start();
+                            logger.log("INFO", "ChatServer.main | Thread 2", "New client created");
+                            numParticipants++;
+                            break;
+                        }
+                    }
+                    if (i == maxClientsCount) {
+                        PrintStream os = new PrintStream(clientSocket.getOutputStream());
+                        os.println("Server too busy. Try later.");
+                        logger.log("INFO", "ChatServer.main | Thread 2", "Server has reached capacity");
+                        os.close();
+                        clientSocket.close();
+                    }
+                } catch (IOException e) {
+                    logger.log("ERROR", "ChatServer.main | Thread 2", e.toString());
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
     }
 }
 
@@ -89,7 +111,6 @@ class clientThread extends Thread {
         this.clientSocket = clientSocket;
         this.threads = threads;
         maxClientsCount = threads.length;
-
 
         this.commands = new HashMap<String, String>();
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
@@ -152,7 +173,6 @@ class clientThread extends Thread {
             is = new DataInputStream(clientSocket.getInputStream());
             os = new PrintStream(clientSocket.getOutputStream());
 
-            String name;
             while (true) {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT");
                 os.println("Enter your name:");
@@ -205,7 +225,7 @@ class clientThread extends Thread {
 
                 String msgTime = new Utils().getTime("SHORT_DATE");
 
-
+                ChatServer.messages += 1;
                 // private message
                 if (line.startsWith("@")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");
@@ -239,10 +259,13 @@ class clientThread extends Thread {
                                 threads[i].os.println(msgTime +  " [" + msgName + "] " + line);
                             }
                         }
+
+                        ChatServer.conversation.add(new Message(line, ChatServer.chat.getChat().getUser(this.idNumber)));
                     }
                 }
             }
         } catch (IOException e) {
+            ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
         }
     }
 }

@@ -162,14 +162,12 @@ public class ChatActions {
             logger.log("SUCCESS", "ChatActions.quitChat", "QUIT CHAT --> DONE");
 
         } catch (IOException error) {
-            //System.out.println(error);
             logger.log("ERROR", "ChatActions.quitChat", error.toString());
         }
     }
 
     private void chatName() {
         logger.log("INFO", "ChatActions.chatName", "ACTION: " + action);
-        //System.out.println("ACTION: " + action);
         if (action.equals(commands.get("VIEW_CHAT_NAME"))) {
             logger.log("INFO", "ChatActions.chatName", "VIEW_CHAT_NAME");
             String chatName = chat.getChatName();

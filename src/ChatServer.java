@@ -23,10 +23,12 @@ public class ChatServer {
     public static ChatActions chat = new ChatActions();
     public static ChatLog logger = new ChatLog();
     public static ServerActions server = new ServerActions();
+    public static Message message;
 
     public static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
     public static int messages;
+    public static ArrayList<Message> conversation = new ArrayList<>();
 
     public static void main(String args[]) {
 
@@ -257,6 +259,8 @@ class clientThread extends Thread {
                                 threads[i].os.println(msgTime +  " [" + msgName + "] " + line);
                             }
                         }
+
+                        ChatServer.conversation.add(new Message(line, ChatServer.chat.getChat().getUser(this.idNumber)));
                     }
                 }
             }

@@ -82,6 +82,28 @@ public class Chat {
         return users;
     }
 
+    public User getUser(int value) {
+//        value = value.toString();
+//        if (users.containsKey(value)) {
+//            return users.get(value);
+//        } else if (users.containsValue(value)) {
+//            Iterator it = users.entrySet().iterator();
+//            while (it.hasNext()) {
+//                Map.Entry pair = (Map.Entry)it.next();
+//                if (users.get(pair.getKey()).getName() == value) {
+//                    return users.get(pair.getKey());
+//                }
+//            }
+//        }
+//
+//        return null;
+
+        if (users.containsKey(value)) {
+            return users.get(value);
+        }
+
+        return null;
+    }
 
     public int getNumParticipants() {
         return numParticipants;

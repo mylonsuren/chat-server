@@ -67,7 +67,7 @@ public class Chat {
         users.put(newUser.getId(), newUser);
         client.setIdNumber(newUser.getId());
         numParticipants++;
-        logger.log("SUCCESS", "Chat.addUser", "New user " + newUser.getId() + " successfully joined");
+        logger.log("SUCCESS", "Chat.addUser", "New user |ID=" + newUser.getId() + "| successfully joined");
     }
 
     public void setChatNameModified(boolean chatNameModified) {
@@ -82,6 +82,12 @@ public class Chat {
         return users;
     }
 
+    public User getUser(int value) {
+        if (users.containsKey(value)) {
+            return users.get(value);
+        }
+        return null;
+    }
 
     public int getNumParticipants() {
         return numParticipants;

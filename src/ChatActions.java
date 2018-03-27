@@ -235,7 +235,7 @@ public class ChatActions {
         logger.log("INFO", "ChatActions.addUser", "ADD USER --> INITIATED");
         chat.addUser(name, client);
         if (!chat.isChatNameModified()) {
-            chat.resetChatName();
+                chat.resetChatName();
         }
         logger.log("SUCCESS", "ChatActions.addUser", "ADD USER --> DONE");
     }

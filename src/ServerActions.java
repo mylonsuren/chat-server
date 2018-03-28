@@ -23,6 +23,7 @@ public class ServerActions {
         this.serverCommands.put("MESSAGES", "/messages");
         this.serverCommands.put("CONVERSATION", "/view-conversation");
         this.serverCommands.put("REMOVE_USER", "/remove");
+        this.serverCommands.put("INFO", "/info");
 
         this.action = "";
     }
@@ -66,6 +67,8 @@ public class ServerActions {
                 logger.log("ERROR", "ServerActions.handleAction", error.toString());
                 System.out.println("\nInvalid parameter given, please input integer for '/remove'\n");
             }
+        } else if (action.startsWith("/info")) {
+            viewInfo();
         } else {
             if (action.startsWith("/")) {
                 System.out.println("Invalid action, please enter a valid action");
@@ -88,19 +91,32 @@ public class ServerActions {
     }
 
     public void removeUser(int id) {
-        ChatServer.chat.getChat().removeUser(id);
+
         for (int i = 0; i < clients.length; i++)  {
-            if (clients[i].getIdNumber() == id) {
+            if (clients[i] != null && clients[i].getIdNumber() == id) {
+                ChatServer.chat.getChat().removeUser(id);
                 clients[i].getOs().close();
-                break;
+                logger.log("SUCCESS", "ServerActions.removeUser", "USER id=" + id + " removed");
+                return;
             }
         }
-        logger.log("SUCCESS", "ServerActions.removeUser", "USER id=" + id + " removed");
+
+        logger.log("ERROR", "ServerActions.removeUser", "USER id=" + id + " invalid");
     }
 
     public void shutdown() {
         logger.log("SUCCESS", "ServerActions.shutdown", "Server successfully shutdown");
         System.exit(0);
+    }
+
+    public void viewInfo() {
+        Information info = new Information();
+        System.out.println("\n-------");
+        System.out.println("Application Information");
+        System.out.println("version: " + info.getVersionNo());
+        System.out.println("date modified: " + info.getVersionDate());
+        System.out.println("author: " + info.getAuthor());
+        System.out.println("-------\n");
     }
 
     public void clearLog() {
@@ -188,4 +204,27 @@ class Message {
     public String getTime() {
         return time;
     }
+
+}
+
+class Information {
+
+    private String versionNo = "0.2.2";
+    private String versionDate = "28/03/2018";
+    private String author = "Mylon S";
+
+    public Information() {}
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getVersionDate() {
+        return versionDate;
+    }
+
+    public String getVersionNo() {
+        return versionNo;
+    }
+
 }

@@ -105,7 +105,6 @@ public class ChatActions {
             chat.getUsers().get(client.getIdNumber()).setName(newName);
             logger.log("INFO", "ChatActions.modifyName", "Current user name: " + currentName + ", new user name: " + newName);
         } else {
-            System.out.println("HERERERE");
             printToClient("Please provide a new name as well. (e.g. /modify-name John)\n");
             logger.log("ERROR", "ChatActions.modifyName","No parameter provided");
         }
@@ -205,7 +204,7 @@ public class ChatActions {
 
                 Map.Entry pair = (Map.Entry)it.next();
                 logger.log("INFO", "ChatActions.viewUsers", "USER --> " + pair.getKey());
-                printToClient("| " + pair.getKey().toString() + " - " + chat.getUsers().get(pair.getKey()).getName().toString() + " |\n");
+                printToClient("| " + pair.getKey().toString() + " - " + chat.getUsers().get(pair.getKey()).getName() + " |\n");
             }
         } catch (Error error) {
             logger.log("ERROR", "ChatActions.viewUsers", error.toString());
@@ -235,7 +234,7 @@ public class ChatActions {
         logger.log("INFO", "ChatActions.addUser", "ADD USER --> INITIATED");
         chat.addUser(name, client);
         if (!chat.isChatNameModified()) {
-                chat.resetChatName();
+            chat.resetChatName();
         }
         logger.log("SUCCESS", "ChatActions.addUser", "ADD USER --> DONE");
     }

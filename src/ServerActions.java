@@ -56,7 +56,8 @@ public class ServerActions {
             parseActionMessage();
             try {
                 if (actionMessage == null) {
-
+                    logger.log("ERROR", "ServerActions.handleAction", "No user id provided");
+                    System.out.println("\nPlease provide a user id for '/remove'");
                 } else {
                     int userID = Integer.parseInt(actionMessage);
                     removeUser(userID);
@@ -122,6 +123,7 @@ public class ServerActions {
     }
 
     public void viewUsers() {
+        ChatClient.main(new String[0]);
         Iterator it = ChatServer.chat.getChat().getUsers().entrySet().iterator();
 
         if (ChatServer.chat.getChat().getUsers().size() <= 0) {
@@ -130,7 +132,7 @@ public class ServerActions {
             System.out.println("CURRENT PARTICIPANTS:");
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry)it.next();
-                System.out.print("| " + pair.getKey().toString() + " - " + ChatServer.chat.getChat().getUsers().get(pair.getKey()).getName().toString() + " |\n");
+                System.out.print("| " + pair.getKey().toString() + " - " + ChatServer.chat.getChat().getUsers().get(pair.getKey()).getName() + " |\n");
             }
         }
     }

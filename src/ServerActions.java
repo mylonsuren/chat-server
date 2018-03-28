@@ -123,7 +123,6 @@ public class ServerActions {
     }
 
     public void viewUsers() {
-        ChatClient.main(new String[0]);
         Iterator it = ChatServer.chat.getChat().getUsers().entrySet().iterator();
 
         if (ChatServer.chat.getChat().getUsers().size() <= 0) {

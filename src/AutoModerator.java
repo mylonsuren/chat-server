@@ -80,4 +80,18 @@ public class AutoModerator {
         client.getOs().println("This is warning " + level + ". You have " + diff + " warnings left.");
     }
 
+
+    public String censor(String text, clientThread client) {
+        System.out.println("HERE TESTING");
+        for (int i = 0; i < words.size(); i++) {
+            if (text.contains(words.get(i))) {
+                System.out.println("FINALLY");
+                text = text.replace(words.get(i), "****");
+                System.out.println(text);
+            }
+        }
+
+        return text;
+    }
+
 }

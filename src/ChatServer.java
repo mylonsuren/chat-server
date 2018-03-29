@@ -236,6 +236,7 @@ class clientThread extends Thread {
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
                                 ChatServer.mod.checkMessage(words[1], this);
+                                words[1] = ChatServer.mod.censor(words[1], this);
                                 for (int i = 0; i < maxClientsCount; i++) {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
@@ -256,6 +257,7 @@ class clientThread extends Thread {
 
                     synchronized (this) {
                         ChatServer.mod.checkMessage(line, this);
+                        line = ChatServer.mod.censor(line, this);
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
                                 threads[i].os.println(msgTime +  " [" + msgName + "] " + line);

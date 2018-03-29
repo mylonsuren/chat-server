@@ -9,6 +9,7 @@ public class User {
     private String timeJoined;
     private ChatLog logger;
     private int warn;
+    private boolean timeActive = false;
 
     public User(String name) {
         this.logger = new ChatLog();
@@ -20,6 +21,14 @@ public class User {
 
     public void addWarning() {
         warn++;
+    }
+
+    public void setTimeActive() {
+        this.timeActive = !timeActive;
+    }
+
+    public boolean isTimeActive() {
+        return timeActive;
     }
 
     public int getWarn() {

@@ -21,6 +21,7 @@ public class ChatServer {
     public static int numParticipants = 0;
 
     public static ChatActions chat = new ChatActions();
+    public static AutoModerator mod = new AutoModerator(chat);
     public static ChatLog logger = new ChatLog();
     public static ServerActions server = new ServerActions();
     public static Message message;
@@ -234,6 +235,7 @@ class clientThread extends Thread {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
+                                ChatServer.mod.checkMessage(words[1], this);
                                 for (int i = 0; i < maxClientsCount; i++) {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
@@ -253,7 +255,7 @@ class clientThread extends Thread {
                 } else {
 
                     synchronized (this) {
-
+                        ChatServer.mod.checkMessage(line, this);
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
                                 threads[i].os.println(msgTime +  " [" + msgName + "] " + line);

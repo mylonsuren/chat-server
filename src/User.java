@@ -8,12 +8,22 @@ public class User {
     private String name;
     private String timeJoined;
     private ChatLog logger;
+    private int warn;
 
     public User(String name) {
         this.logger = new ChatLog();
         this.name = name;
         this.timeJoined = new Utils().getTime("FULL_DATE");
         this.id = generateID();
+        this.warn = 0;
+    }
+
+    public void addWarning() {
+        warn++;
+    }
+
+    public int getWarn() {
+        return warn;
     }
 
     public int getId() {

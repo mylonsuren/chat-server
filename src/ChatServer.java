@@ -105,6 +105,7 @@ class clientThread extends Thread {
     private int maxClientsCount;
     private int idNumber;
 
+    private String input;
 
     private HashMap<String, String> commands;
     private HashMap<Integer, String> specialCharacters;
@@ -114,7 +115,7 @@ class clientThread extends Thread {
         this.threads = threads;
         maxClientsCount = threads.length;
 
-        this.commands = new HashMap<String, String>();
+        this.commands = new HashMap<>();
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
         this.commands.put("LEAVE_CHAT", "/quit");
         this.commands.put("VIEW_MEMBERS", "/members");
@@ -123,7 +124,7 @@ class clientThread extends Thread {
         this.commands.put("VIEW_CHAT_NAME", "/view-chat-name");
         this.commands.put("RESET_CHAT_NAME", "/remove-chat-name");
 
-        this.specialCharacters = new HashMap<Integer, String>();
+        this.specialCharacters = new HashMap<>();
         this.specialCharacters.put(0, "@");
         this.specialCharacters.put(1, "/");
 
@@ -216,12 +217,19 @@ class clientThread extends Thread {
 
 
             while (true) {
+
+//                if (ChatServer.chat.getChat().getUser(this.getIdNumber()).isTimeActive()) {
+//                    this.input = null;
+//                    continue;
+//                }
+
                 String line = is.readLine();
+                this.input = line;
 
                 // Chat commands
-                if (line.startsWith("/")) {
+                if (this.input.startsWith("/")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "ACTION ITEM");
-                    ChatServer.chat.handleAction(line, this);
+                    ChatServer.chat.handleAction(this.input, this);
                     continue;
                 }
 
@@ -229,9 +237,9 @@ class clientThread extends Thread {
 
                 ChatServer.messages += 1;
                 // private message
-                if (line.startsWith("@")) {
+                if (this.input.startsWith("@")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");
-                    String[] words = line.split("\\s", 2);
+                    String[] words = this.input.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
@@ -257,15 +265,15 @@ class clientThread extends Thread {
                 } else {
 
                     synchronized (this) {
-                        ChatServer.mod.checkMessage(line, this);
-                        line = ChatServer.mod.censor(line, this);
+                        ChatServer.mod.checkMessage(this.input, this);
+                        this.input = ChatServer.mod.censor(this.input, this);
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println(msgTime +  " [" + msgName + "] " + line);
+                                threads[i].os.println(msgTime +  " [" + msgName + "] " + this.input);
                             }
                         }
 
-                        ChatServer.conversation.add(new Message(line, ChatServer.chat.getChat().getUser(this.idNumber)));
+                        ChatServer.conversation.add(new Message(this.input, ChatServer.chat.getChat().getUser(this.idNumber)));
                     }
                 }
             }

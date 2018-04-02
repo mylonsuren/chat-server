@@ -4,7 +4,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -218,10 +217,6 @@ class clientThread extends Thread {
 
             while (true) {
 
-//                if (ChatServer.chat.getChat().getUser(this.getIdNumber()).isTimeActive()) {
-//                    this.input = null;
-//                    continue;
-//                }
 
                 String line = is.readLine();
                 this.input = line;
@@ -277,7 +272,7 @@ class clientThread extends Thread {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             if (!e.toString().contains("SocketException")) {
                 ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
             }

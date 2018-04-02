@@ -88,7 +88,7 @@ public class AutoModerator {
     public String censor(String text, clientThread client) {
         for (int i = 0; i < words.size(); i++) {
             if (text.contains(words.get(i).getWord())) {
-                text = text.replace(words.get(i).getWord(), words.get(i).getReplacement());
+//                text = text.replace(words.get(i).getWord(), words.get(i).getReplacement());
             }
         }
 

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.applet.Applet;
-import java.io.*;
 
 public class ChatClient extends Applet implements Runnable {
 

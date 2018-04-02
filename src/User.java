@@ -1,4 +1,4 @@
-import java.text.SimpleDateFormat;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class User {

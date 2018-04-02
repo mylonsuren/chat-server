@@ -4,6 +4,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -269,7 +270,9 @@ class clientThread extends Thread {
                 }
             }
         } catch (IOException e) {
-            ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
+            if (!e.toString().contains("SocketException")) {
+                ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
+            }
         }
     }
 }

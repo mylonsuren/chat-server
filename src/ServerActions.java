@@ -13,10 +13,12 @@ public class ServerActions {
     private String actionMessage;
     private String userMessage;
     private clientThread[] clients;
+    private ChatActions chatActions;
 
     private String allUsers = "all_users";
 
-    public ServerActions() {
+    public ServerActions(ChatActions chatActions) {
+        this.chatActions = chatActions;
         this.logger = new ChatLog();
         this.serverCommands = new HashMap<>();
         this.serverCommands.put("SHUTDOWN", "/shutdown");
@@ -27,6 +29,8 @@ public class ServerActions {
         this.serverCommands.put("REMOVE_USER", "/remove");
         this.serverCommands.put("INFO", "/info");
         this.serverCommands.put("MESSAGE_USER", "/message");
+        this.serverCommands.put("WARN_USER", "/warn");
+        this.serverCommands.put("TIME_BAN", "/time-ban");
 
         this.action = "";
     }
@@ -75,6 +79,12 @@ public class ServerActions {
         } else if (action.startsWith(serverCommands.get("MESSAGE_USER"))) {
             parseUserMessage();
             sendUserMessage();
+        } else if (action.startsWith(serverCommands.get("WARN_USER"))) {
+            parseActionMessage();
+            warnUser();
+        } else if (action.startsWith(serverCommands.get("TIME_BAN"))) {
+            parseActionMessage();
+            timeBanUser();
         } else {
             if (action.startsWith("/")) {
                 System.out.println("Invalid action, please enter a valid action");
@@ -114,6 +124,28 @@ public class ServerActions {
             }
         } catch (ArrayIndexOutOfBoundsException error) {
             logger.log("ERROR", "ServerActions.parseUserMessage", error.toString());
+        }
+    }
+
+    public void warnUser() {
+        for (clientThread client : clients) {
+            if (client != null) {
+                if (client.getMsgName().equals(actionMessage)) {
+                    new AutoModerator(chatActions).issueWarning(client);
+                }
+            }
+
+        }
+    }
+
+    public void timeBanUser() {
+        for (clientThread client : clients) {
+            if (client != null) {
+                if (client.getMsgName().equals(actionMessage)) {
+                    new AutoModerator(chatActions).timeBan(client);
+                }
+            }
+
         }
     }
 

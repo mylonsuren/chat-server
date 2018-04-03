@@ -23,7 +23,7 @@ public class ChatServer {
     public static ChatActions chat = new ChatActions();
     public static AutoModerator mod = new AutoModerator(chat);
     public static ChatLog logger = new ChatLog();
-    public static ServerActions server = new ServerActions();
+    public static ServerActions server = new ServerActions(chat);
     public static Message message;
 
     public static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -240,7 +240,7 @@ class clientThread extends Thread {
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
                                 ChatServer.mod.checkMessage(words[1], this);
-                                words[1] = ChatServer.mod.censor(words[1], this);
+                                words[1] = ChatServer.mod.censor(words[1]);
                                 for (int i = 0; i < maxClientsCount; i++) {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
@@ -261,7 +261,7 @@ class clientThread extends Thread {
 
                     synchronized (this) {
                         ChatServer.mod.checkMessage(this.input, this);
-                        this.input = ChatServer.mod.censor(this.input, this);
+                        this.input = ChatServer.mod.censor(this.input);
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
                                 threads[i].os.println(msgTime +  " [" + msgName + "] " + this.input);

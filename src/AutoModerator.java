@@ -26,6 +26,7 @@ public class AutoModerator {
 
         this.words.put(0, new ReplaceWords("test", "****"));
         this.words.put(1, new ReplaceWords("word", "****"));
+        this.words.put(2, new ReplaceWords("active", "******"));
     }
 
     public void checkMessage(String message, clientThread client) {
@@ -39,6 +40,7 @@ public class AutoModerator {
                 logger.log("INFO", "AutoModerator.checkMessage", "Invalid phrase/word found");
                 chat.getUser(client.getIdNumber()).addWarning();
                 checkWarningLevel();
+                break;
             }
         }
 
@@ -75,8 +77,6 @@ public class AutoModerator {
         } catch (InterruptedException error) {
             logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString());
         }
-
-
     }
 
     private void assertBan() {
@@ -92,11 +92,30 @@ public class AutoModerator {
         client.getOs().println("This is warning " + level + ". You have " + diff + " warnings left.");
     }
 
+    public void issueWarning(clientThread client) {
+        logger.log("INFO", "AutoModerator.issueWarning", "Manual warning issued to user");
+        client.getOs().println("This is a warning from the conversation moderators, any further infringements will result in official warnings and bans.");
+    }
 
-    public String censor(String text, clientThread client) {
+    public void timeBan(clientThread client) {
+        try {
+            client.getOs().println("You have been issued a time ban of " + timeBan + " minutes.");
+            logger.log("INFO", "AutoModerator.issueTimeBan", "before timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            chat.getUser(client.getIdNumber()).setTimeActive();
+            logger.log("INFO", "AutoModerator.issueTimeBan", "during timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            TimeUnit.SECONDS.sleep(timeBan);
+            chat.getUser(client.getIdNumber()).setTimeActive();
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "after timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+        } catch (InterruptedException error) {
+            logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString());
+        }
+    }
+
+
+    public String censor(String text) {
         for (int i = 0; i < words.size(); i++) {
             if (text.contains(words.get(i).getWord())) {
-//                text = text.replace(words.get(i).getWord(), words.get(i).getReplacement());
+                text = text.replace(words.get(i).getWord(), words.get(i).getReplacement());
             }
         }
 

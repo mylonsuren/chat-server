@@ -179,10 +179,10 @@ class clientThread extends Thread {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT");
                 os.println("Enter your name:");
                 msgName = is.readLine().trim();
-                if (msgName.indexOf(specialCharacters.get(0)) == -1) {
+                if (!msgName.contains(specialCharacters.get(0))) {
                     break;
                 }
-                else if (msgName.indexOf(specialCharacters.get(1)) == -1) {
+                else if (!msgName.contains(specialCharacters.get(1))) {
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");

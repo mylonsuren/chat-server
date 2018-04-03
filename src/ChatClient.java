@@ -26,8 +26,6 @@ public class ChatClient extends Applet implements Runnable {
 
     public static void main(String[] args) {
 
-
-
         // The default port.
         int portNumber = 2222;
         // The default host.
@@ -80,7 +78,7 @@ public class ChatClient extends Applet implements Runnable {
         try {
             while ((responseLine = is.readLine()) != null) {
                 System.out.println(responseLine);
-                if (responseLine.indexOf("*** Bye") != -1) {
+                if (responseLine.contains("*** Bye")) {
                     break;
                 } else if (responseLine.contains("Sorry, the conversation has reached its maximum number of participants")) {
                     break;

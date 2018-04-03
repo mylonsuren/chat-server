@@ -13,6 +13,7 @@ public class Chat {
     private String chatName;
     private User newUser;
     private ChatLog logger = new ChatLog();
+    private Utils utils = new Utils();
     private boolean chatNameModified = false;
 
     public Chat () {
@@ -43,6 +44,7 @@ public class Chat {
         this.chatName = chatName;
         this.chatNameModified = true;
         logger.log("SUCCESS", "Chat.setChatName", "Chat name changed to --> " + chatName);
+
     }
 
     public String getChatName() {
@@ -53,6 +55,7 @@ public class Chat {
         generateChatName();
         this.chatNameModified = false;
         logger.log("SUCCESS", "Chat.resetChatName", "Chat name successfully reset");
+
     }
 
     public void removeUser(int id) {

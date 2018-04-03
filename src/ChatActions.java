@@ -12,12 +12,14 @@ public class ChatActions {
     private String actionMessage;
 
     private ChatLog logger;
+    private Utils utils;
 
     private HashMap<String,String> commands = new HashMap<>();
 
     public ChatActions() {
         this.chat = new Chat();
         this.logger = new ChatLog();
+        this.utils = new Utils();
         initiateCommands();
     }
 
@@ -74,6 +76,8 @@ public class ChatActions {
         client.getOs().print(message);
         logger.log("SUCCESS", "ChatActions.printToClient", "PRINT TO CLIENT --> DONE");
     }
+
+
 
     private void initiateCommands() {
         commands.put("VIEW_CHAT_NAME", "/chat-name-view");
@@ -175,9 +179,11 @@ public class ChatActions {
         } else if (action.equals(commands.get("REMOVE_CHAT_NAME"))) {
             logger.log("INFO", "ChatActions.chatName", "REMOVE_CHAT_NAME");
             chat.resetChatName();
+            utils.printToServer(client.getMsgName() + " removed the conversation name.", client.getThreads());
         } else if (action.equals(commands.get("SET_CHAT_NAME"))) {
             logger.log("INFO", "ChatActions.chatName", "SET_CHAT_NAME");
             chat.setChatName(actionMessage);
+            utils.printToServer(client.getMsgName() + " changed the conversation name to: " + actionMessage, client.getThreads());
         } else {
             logger.log("INFO", "ChatActions.chatName", "No recognizable action");
             printToClient("ERROR: Please enter a valid action or message");
@@ -212,21 +218,25 @@ public class ChatActions {
     }
 
     private void removeUser(clientThread[] threads, String user) {
+        boolean removed = false;
         logger.log("INFO", "ChatActions.removeUser", "REMOVE USER --> INITIATED");
         for (int i = 0; i < threads.length; i++) {
-            if (threads[i] != null) {
-                threads[i].getOs().println(threads[i].getMsgName() + " removed " + user + " from the chat");
-            }
-
             if (threads[i] != null && threads[i].getClientName()!= null
                     && threads[i].getMsgName().equals(user)) {
                 threads[i].getOs().println("You have been removed from the chat by " + client.getMsgName());
                 threads[i].getOs().close();
                 chat.removeUser(i);
+                removed = true;
                 break;
             }
         }
-        logger.log("SUCCESS", "ChatActions.removeUser", "REMOVE USER --> DONE");
+        if (removed) {
+            logger.log("SUCCESS", "ChatActions.removeUser", "REMOVE USER --> DONE");
+        } else {
+            logger.log("ERROR", "ChatActions.removeUser", "Invalid user provided");
+            printToClient("Please provide a valid user\n");
+        }
+
     }
 
 

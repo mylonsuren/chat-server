@@ -29,15 +29,23 @@ public class AutoModerator {
     }
 
     public void checkMessage(String message, clientThread client) {
+        boolean invalid = false;
         this.message = message;
         this.client = client;
         logger.log("INFO", "AutoModerator.checkMessage", "Checking message...");
         for (int i = 0; i < words.size(); i++) {
             if (this.message.contains(words.get(i).getWord())) {
+                invalid = true;
                 logger.log("INFO", "AutoModerator.checkMessage", "Invalid phrase/word found");
                 chat.getUser(client.getIdNumber()).addWarning();
                 checkWarningLevel();
             }
+        }
+
+        if (invalid) {
+            logger.log("INFO", "AutoModerator.checkMessage", "Message is invalid...");
+        } else {
+            logger.log("INFO", "AutoModerator.checkMessage", "Message is valid...");
         }
     }
 

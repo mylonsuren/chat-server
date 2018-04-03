@@ -21,6 +21,7 @@ public class ChatServer {
     public static int numParticipants = 0;
 
     public static ChatActions chat = new ChatActions();
+    public static AutoModerator mod = new AutoModerator(chat);
     public static ChatLog logger = new ChatLog();
     public static ServerActions server = new ServerActions();
     public static Message message;
@@ -103,6 +104,7 @@ class clientThread extends Thread {
     private int maxClientsCount;
     private int idNumber;
 
+    private String input;
 
     private HashMap<String, String> commands;
     private HashMap<Integer, String> specialCharacters;
@@ -112,7 +114,7 @@ class clientThread extends Thread {
         this.threads = threads;
         maxClientsCount = threads.length;
 
-        this.commands = new HashMap<String, String>();
+        this.commands = new HashMap<>();
         this.commands.put("SHUTDOWN_SERVER", "/shutdown");
         this.commands.put("LEAVE_CHAT", "/quit");
         this.commands.put("VIEW_MEMBERS", "/members");
@@ -121,7 +123,7 @@ class clientThread extends Thread {
         this.commands.put("VIEW_CHAT_NAME", "/view-chat-name");
         this.commands.put("RESET_CHAT_NAME", "/remove-chat-name");
 
-        this.specialCharacters = new HashMap<Integer, String>();
+        this.specialCharacters = new HashMap<>();
         this.specialCharacters.put(0, "@");
         this.specialCharacters.put(1, "/");
 
@@ -177,10 +179,10 @@ class clientThread extends Thread {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT");
                 os.println("Enter your name:");
                 msgName = is.readLine().trim();
-                if (msgName.indexOf(specialCharacters.get(0)) == -1) {
+                if (!msgName.contains(specialCharacters.get(0))) {
                     break;
                 }
-                else if (msgName.indexOf(specialCharacters.get(1)) == -1) {
+                else if (!msgName.contains(specialCharacters.get(1))) {
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");
@@ -214,12 +216,15 @@ class clientThread extends Thread {
 
 
             while (true) {
+
+
                 String line = is.readLine();
+                this.input = line;
 
                 // Chat commands
-                if (line.startsWith("/")) {
+                if (this.input.startsWith("/")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "ACTION ITEM");
-                    ChatServer.chat.handleAction(line, this);
+                    ChatServer.chat.handleAction(this.input, this);
                     continue;
                 }
 
@@ -227,13 +232,15 @@ class clientThread extends Thread {
 
                 ChatServer.messages += 1;
                 // private message
-                if (line.startsWith("@")) {
+                if (this.input.startsWith("@")) {
                     ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");
-                    String[] words = line.split("\\s", 2);
+                    String[] words = this.input.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
+                                ChatServer.mod.checkMessage(words[1], this);
+                                words[1] = ChatServer.mod.censor(words[1], this);
                                 for (int i = 0; i < maxClientsCount; i++) {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
@@ -253,19 +260,22 @@ class clientThread extends Thread {
                 } else {
 
                     synchronized (this) {
-
+                        ChatServer.mod.checkMessage(this.input, this);
+                        this.input = ChatServer.mod.censor(this.input, this);
                         for (int i = 0; i < maxClientsCount; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println(msgTime +  " [" + msgName + "] " + line);
+                                threads[i].os.println(msgTime +  " [" + msgName + "] " + this.input);
                             }
                         }
 
-                        ChatServer.conversation.add(new Message(line, ChatServer.chat.getChat().getUser(this.idNumber)));
+                        ChatServer.conversation.add(new Message(this.input, ChatServer.chat.getChat().getUser(this.idNumber)));
                     }
                 }
             }
-        } catch (IOException e) {
-            ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
+        } catch (IOException | NullPointerException e) {
+            if (!e.toString().contains("SocketException")) {
+                ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
+            }
         }
     }
 }

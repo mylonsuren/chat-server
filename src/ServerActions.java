@@ -1,5 +1,4 @@
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -213,7 +212,7 @@ public class ServerActions {
     }
 
     public void viewConversation(int size) {
-        int diff = 0;
+        int diff;
         if (size >= ChatServer.conversation.size()) {
             diff = 0;
         } else {
@@ -223,9 +222,17 @@ public class ServerActions {
         System.out.println("\nCONVERSATION");
         for (int i = 0; i < ChatServer.conversation.size(); i++) {
             if (i >= diff) {
-                System.out.println("[" + ChatServer.conversation.get(i).getTime() + "] "
-                        + ChatServer.conversation.get(i).getUser().getName() +  " : "
-                        + ChatServer.conversation.get(i).getMessage());
+                String time = ChatServer.conversation.get(i).getTime();
+                String user;
+                try {
+                    user = ChatServer.conversation.get(i).getUser().getName();
+                } catch (NullPointerException error) {
+                    user = "[deleted]";
+                }
+
+                String message = ChatServer.conversation.get(i).getMessage();
+
+                System.out.println("[" + time + "] " + user +  " : " + message);
             }
 
         }
@@ -236,8 +243,6 @@ public class ServerActions {
 
 
 class Message {
-
-    private Utils utils;
 
     private String message;
     private User user;

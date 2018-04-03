@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.applet.Applet;
-import java.io.*;
 
 public class ChatClient extends Applet implements Runnable {
 
@@ -26,8 +25,6 @@ public class ChatClient extends Applet implements Runnable {
     private static boolean closed = false;
 
     public static void main(String[] args) {
-
-
 
         // The default port.
         int portNumber = 2222;
@@ -81,7 +78,7 @@ public class ChatClient extends Applet implements Runnable {
         try {
             while ((responseLine = is.readLine()) != null) {
                 System.out.println(responseLine);
-                if (responseLine.indexOf("*** Bye") != -1) {
+                if (responseLine.contains("*** Bye")) {
                     break;
                 } else if (responseLine.contains("Sorry, the conversation has reached its maximum number of participants")) {
                     break;

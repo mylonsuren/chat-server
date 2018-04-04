@@ -1,4 +1,5 @@
 
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.io.*;
 import java.util.Iterator;
@@ -125,20 +126,19 @@ public class ChatActions {
             logger.log("INFO", "ChatActions.restartServer", client.getMsgName() + " has shut down server", new Utils().getLineNumber());
             logger.log("INFO", "ChatActions.restartServer", "Shutting down the server", new Utils().getLineNumber());
             for (int i = 0; i < chat.getNumParticipants(); i++) {
-                threads[i].getOs().println("Shutting down server...");
-                threads[i].getOs().println(client.getMsgName() + " is restarting server");
-
-                threads[i].getIs().close();
-                threads[i].getOs().close();
-                threads[i].getClientSocket().close();
+                if (threads[i] != null && threads[i].getClientName() != null) {
+                    threads[i].getOs().println("Server is being restarted...");
+                }
 
             }
 
             logger.log("SUCCESS", "ChatActions.restartServer", "SERVER SHUTDOWN", new Utils().getLineNumber());
-            ChatServer.main(new String[0]);
-            System.exit(0);
-
-
+            ServerSocket testSocket = ChatServer.getServerSocket();
+            testSocket.close();
+            testSocket = new ServerSocket(2222);
+            ChatServer.setServerSocket(testSocket);
+            logger.log("SUCCESS", "ChatActions.restartServer", "Server successfully restarted", new Utils().getLineNumber());
+            printToClient("Server successfully restarted\n");
         } catch (IOException error) {
             logger.log("ERROR", "ChatActions.restartServer", error.toString(), new Utils().getLineNumber());
         }

@@ -6,6 +6,7 @@ import jdk.jshell.execution.Util;
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -27,6 +28,7 @@ public class ChatServer {
     public static ChatLog logger = new ChatLog();
     public static ServerActions server = new ServerActions(chat);
     public static Message message;
+
 
     public static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
@@ -91,6 +93,20 @@ public class ChatServer {
 
         thread1.start();
         thread2.start();
+    }
+
+    public static ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public static void setServerSocket(ServerSocket serverSocket) {
+        ChatServer.serverSocket = serverSocket;
+        try {
+            serverSocket.close();
+        } catch (IOException error) {
+            logger.log("ERROR", "ChatServer.setServerSocket", error.toString(), new Utils().getLineNumber());
+        }
+        ChatServer.main(new String[0]);
     }
 }
 

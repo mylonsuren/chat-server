@@ -117,6 +117,10 @@ public class ChatServer {
         }
         ChatServer.main(new String[0]);
     }
+
+    public static clientThread[] getThreads() {
+        return threads;
+    }
 }
 
 
@@ -192,6 +196,7 @@ class clientThread extends Thread {
         this.idNumber = idNumber;
     }
 
+
     public void run() {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
@@ -201,6 +206,14 @@ class clientThread extends Thread {
 
             is = new DataInputStream(clientSocket.getInputStream());
             os = new PrintStream(clientSocket.getOutputStream());
+
+            ArrayList<String> inputs = new ArrayList<>();
+            inputs.add("message");
+            inputs.add("/users-view");
+            inputs.add("/chat-name-set testing123");
+            inputs.add("/chat-name-view");
+            inputs.add("/quit");
+            int inputIndex = 0;
 
             while (true) {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT", new Utils().getLineNumber());
@@ -216,8 +229,6 @@ class clientThread extends Thread {
                 }
 
             }
-
-
 
 
             os.println("Welcome " + msgName
@@ -244,9 +255,19 @@ class clientThread extends Thread {
 
             while (true) {
 
+                this.input = null;
 
-                String line = is.readLine();
-                this.input = line;
+                if (msgName.equals("user1")) {
+                    this.input = inputs.get(inputIndex);
+                    inputIndex++;
+                } else {
+                    String line = is.readLine();
+                    this.input = line;
+                }
+
+
+
+
 
                 // Chat commands
                 if (this.input.startsWith("/")) {

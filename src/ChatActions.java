@@ -29,6 +29,8 @@ public class ChatActions {
     }
 
     public void handleAction(String message, clientThread client) {
+        logger.log("DEBUG", "ChatActions.handleAction", "Test logging statement for DEBUG", new Utils().getLineNumber());
+        logger.log("TEST", "ChatActions.handleAction", "Test logging statement for TEST", new Utils().getLineNumber());
         logger.log("INFO", "ChatActions.handleAction",  "action sent to action handler", new Utils().getLineNumber());
         this.client = client;
         this.action = message;

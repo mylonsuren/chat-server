@@ -38,25 +38,25 @@ class info extends LogComponent implements LogFns {
     }
 }
 
-//class test extends LogComponent implements LogFns {
-//    public test(String title, String log) {
-//        super(title, log);
-//    }
-//
-//    @Override
-//    public void execute() { System.out.println("TEST | " + time + " | " + title + " | " + log ); }
-//
-//}
-//
-//class debug extends LogComponent implements LogFns {
-//    public debug(String title, String log) {
-//        super(title, log);
-//    }
-//
-//    @Override
-//    public void execute() { System.out.println("DEBUG | " + time + " | " + title + " | " + log ); }
-//
-//}
+class test extends LogComponent implements LogFns {
+    public test(String title, String log, int line) {
+        super(title, log, line);
+    }
+
+    @Override
+    public void execute() { System.out.println("TEST | " + time + " | " + title + " | " + log ); }
+
+}
+
+class debug extends LogComponent implements LogFns {
+    public debug(String title, String log, int line) {
+        super(title, log, line);
+    }
+
+    @Override
+    public void execute() { System.out.println("DEBUG | " + time + " | " + title + " | " + log ); }
+
+}
 
 
 public class ChatLog {
@@ -87,8 +87,8 @@ public class ChatLog {
         logType.put("ERROR", new error(title, log, line));
         logType.put("SUCCESS", new success(title, log, line));
         logType.put("INFO", new info(title, log, line));
-//        logType.put("TEST", new test(title, log));
-//        logType.put("DEBUG", new debug(title, log));
+        logType.put("TEST", new test(title, log, line));
+        logType.put("DEBUG", new debug(title, log, line));
 
         this.message = new LogComponent(title, log, line);
 

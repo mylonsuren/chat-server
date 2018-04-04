@@ -108,6 +108,15 @@ public class ChatServer {
         }
         ChatServer.main(new String[0]);
     }
+
+    public static void serServerSocket() {
+        try {
+            serverSocket.close();
+        } catch (IOException error) {
+            logger.log("ERROR", "ChatServer.setServerSocket", error.toString(), new Utils().getLineNumber());
+        }
+        ChatServer.main(new String[0]);
+    }
 }
 
 

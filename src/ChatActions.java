@@ -123,7 +123,7 @@ public class ChatActions {
         try {
             clientThread[] threads = client.getThreads();
 
-            logger.log("INFO", "ChatActions.restartServer", client.getMsgName() + " has shut down server", new Utils().getLineNumber());
+            logger.log("INFO", "ChatActions.restartServer", client.getMsgName() + " has restart server", new Utils().getLineNumber());
             logger.log("INFO", "ChatActions.restartServer", "Shutting down the server", new Utils().getLineNumber());
             for (int i = 0; i < chat.getNumParticipants(); i++) {
                 if (threads[i] != null && threads[i].getClientName() != null) {

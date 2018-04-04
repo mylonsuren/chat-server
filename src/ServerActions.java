@@ -31,6 +31,7 @@ public class ServerActions {
         this.serverCommands.put("MESSAGE_USER", "/message");
         this.serverCommands.put("WARN_USER", "/warn");
         this.serverCommands.put("TIME_BAN", "/time-ban");
+        this.serverCommands.put("RESTART", "/restart");
 
         this.action = "";
     }
@@ -85,6 +86,8 @@ public class ServerActions {
         } else if (action.startsWith(serverCommands.get("TIME_BAN"))) {
             parseActionMessage();
             timeBanUser();
+        } else if (action.startsWith(serverCommands.get("RESTART"))) {
+            restartServer();
         } else {
             if (action.startsWith("/")) {
                 System.out.println("Invalid action, please enter a valid action");
@@ -125,6 +128,12 @@ public class ServerActions {
         } catch (ArrayIndexOutOfBoundsException error) {
             logger.log("ERROR", "ServerActions.parseUserMessage", error.toString(), new Utils().getLineNumber());
         }
+    }
+
+    public void restartServer() {
+        logger.log("INFO", "ServerActions.restartServer", "Server is being restarted", new Utils().getLineNumber());
+        ChatServer.serServerSocket();
+        logger.log("SUCCESS", "ServerActions.restartServer", "Server successfully reset", new Utils().getLineNumber());
     }
 
     public void warnUser() {
@@ -302,8 +311,8 @@ class Message {
 
 class Information {
 
-    private String versionNo = "0.2.3";
-    private String versionDate = "28/03/2018";
+    private String versionNo = "0.2.5";
+    private String versionDate = "04/04/2018";
     private String author = "Mylon S";
 
     public Information() {}

@@ -1,6 +1,8 @@
 
 
 
+import jdk.jshell.execution.Util;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
@@ -37,8 +39,8 @@ public class ChatServer {
         int portNumber = 2222;
         if (args.length < 1) {
             String portNumberString = Integer.toString(portNumber);
-            logger.log("INFO","ChatServer.main", "java MultiThreadChatServerSync <" + portNumberString + ">");
-            logger.log("INFO","ChatServer.main", "Now using port number=" + portNumberString);
+            logger.log("INFO","ChatServer.main", "java MultiThreadChatServerSync <" + portNumberString + ">", new Utils().getLineNumber());
+            logger.log("INFO","ChatServer.main", "Now using port number=" + portNumberString, new Utils().getLineNumber());
         } else {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
@@ -46,17 +48,17 @@ public class ChatServer {
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
-            logger.log("ERROR", "ChatServer.main", e.toString());
+            logger.log("ERROR", "ChatServer.main", e.toString(), new Utils().getLineNumber());
         }
 
         Thread thread1 = new Thread (() -> {
             while (true) {
                 try {
                     String text = input.readLine();
-                    logger.log("INFO", "ChatServer.main | Thread 1", "INPUT = " + text);
+                    logger.log("INFO", "ChatServer.main | Thread 1", "INPUT = " + text, new Utils().getLineNumber());
                     server.handleAction(text, threads, messages);
                 } catch (IOException error) {
-                    logger.log("ERROR", "ChatServer.main | Thread 1", error.toString());
+                    logger.log("ERROR", "ChatServer.main | Thread 1", error.toString(), new Utils().getLineNumber());
                 }
             }
         });
@@ -69,7 +71,7 @@ public class ChatServer {
                     for (i = 0; i < maxClientsCount; i++) {
                         if (threads[i] == null) {
                             (threads[i] = new clientThread(clientSocket, threads)).start();
-                            logger.log("INFO", "ChatServer.main | Thread 2", "New client created");
+                            logger.log("INFO", "ChatServer.main | Thread 2", "New client created", new Utils().getLineNumber());
                             numParticipants++;
                             break;
                         }
@@ -77,12 +79,12 @@ public class ChatServer {
                     if (i == maxClientsCount) {
                         PrintStream os = new PrintStream(clientSocket.getOutputStream());
                         os.println("Server too busy. Try later.");
-                        logger.log("INFO", "ChatServer.main | Thread 2", "Server has reached capacity");
+                        logger.log("INFO", "ChatServer.main | Thread 2", "Server has reached capacity", new Utils().getLineNumber());
                         os.close();
                         clientSocket.close();
                     }
                 } catch (IOException e) {
-                    logger.log("ERROR", "ChatServer.main | Thread 2", e.toString());
+                    logger.log("ERROR", "ChatServer.main | Thread 2", e.toString(), new Utils().getLineNumber());
                 }
             }
         });
@@ -176,7 +178,7 @@ class clientThread extends Thread {
             os = new PrintStream(clientSocket.getOutputStream());
 
             while (true) {
-                ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT");
+                ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT", new Utils().getLineNumber());
                 os.println("Enter your name:");
                 msgName = is.readLine().trim();
                 if (!msgName.contains(specialCharacters.get(0))) {
@@ -198,7 +200,7 @@ class clientThread extends Thread {
 
             ChatServer.chat.addUser(msgName, this);
             String listOfUsers = ChatServer.chat.getChat().getUsers().toString();
-            ChatServer.logger.log("INFO", "clientThread.run", "LIST OF USERS: " + listOfUsers);
+            ChatServer.logger.log("INFO", "clientThread.run", "LIST OF USERS: " + listOfUsers, new Utils().getLineNumber());
 
             synchronized (this) {
                 for (int i = 0; i < maxClientsCount; i++) {
@@ -223,7 +225,7 @@ class clientThread extends Thread {
 
                 // Chat commands
                 if (this.input.startsWith("/")) {
-                    ChatServer.logger.log("INFO", "clientThread.run", "ACTION ITEM");
+                    ChatServer.logger.log("INFO", "clientThread.run", "ACTION ITEM", new Utils().getLineNumber());
                     ChatServer.chat.handleAction(this.input, this);
                     continue;
                 }
@@ -233,14 +235,12 @@ class clientThread extends Thread {
                 ChatServer.messages += 1;
                 // private message
                 if (this.input.startsWith("@")) {
-                    ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED");
+                    ChatServer.logger.log("INFO", "clientThread.run", "PRIVATE MESSAGE ENACTED", new Utils().getLineNumber());
                     String[] words = this.input.split("\\s", 2);
                     if (words.length > 1 && words[1] != null) {
                         words[1] = words[1].trim();
                         if (!words[1].isEmpty()) {
                             synchronized (this) {
-                                ChatServer.mod.checkMessage(words[1], this);
-                                words[1] = ChatServer.mod.censor(words[1]);
                                 for (int i = 0; i < maxClientsCount; i++) {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
@@ -274,7 +274,7 @@ class clientThread extends Thread {
             }
         } catch (IOException | NullPointerException e) {
             if (!e.toString().contains("SocketException")) {
-                ChatServer.logger.log("ERROR", "clientThread.run", e.toString());
+                ChatServer.logger.log("ERROR", "clientThread.run", e.toString(), new Utils().getLineNumber());
             }
         }
     }

@@ -25,7 +25,7 @@ public class Chat {
     private void generateChatName() {
         try {
             chatName = "";
-            logger.log("INFO", "Chat.generateChatName", "Creating new chat name");
+            logger.log("INFO", "Chat.generateChatName", "Creating new chat name", new Utils().getLineNumber());
 
             Iterator it = users.entrySet().iterator();
             while (it.hasNext()) {
@@ -33,9 +33,9 @@ public class Chat {
                 chatName += users.get(pair.getKey()).getName() + ", ";
             }
 
-            logger.log("SUCCESS", "Chat.generateChatName", "New chat name successfully created");
+            logger.log("SUCCESS", "Chat.generateChatName", "New chat name successfully created", new Utils().getLineNumber());
         } catch (Error error) {
-            logger.log("ERROR", "Chat.generateChatName", error.toString());
+            logger.log("ERROR", "Chat.generateChatName", error.toString(), new Utils().getLineNumber());
 
         }
     }
@@ -43,7 +43,7 @@ public class Chat {
     public void setChatName(String chatName) {
         this.chatName = chatName;
         this.chatNameModified = true;
-        logger.log("SUCCESS", "Chat.setChatName", "Chat name changed to --> " + chatName);
+        logger.log("SUCCESS", "Chat.setChatName", "Chat name changed to --> " + chatName, new Utils().getLineNumber());
 
     }
 
@@ -54,14 +54,14 @@ public class Chat {
     public void resetChatName() {
         generateChatName();
         this.chatNameModified = false;
-        logger.log("SUCCESS", "Chat.resetChatName", "Chat name successfully reset");
+        logger.log("SUCCESS", "Chat.resetChatName", "Chat name successfully reset", new Utils().getLineNumber());
 
     }
 
     public void removeUser(int id) {
         users.remove(id);
         numParticipants--;
-        logger.log("SUCCESS", "Chat.removeUser", "User " + id + " successfully removed");
+        logger.log("SUCCESS", "Chat.removeUser", "User " + id + " successfully removed", new Utils().getLineNumber());
     }
 
     public void addUser(String name, clientThread client) {
@@ -70,7 +70,7 @@ public class Chat {
         users.put(newUser.getId(), newUser);
         client.setIdNumber(newUser.getId());
         numParticipants++;
-        logger.log("SUCCESS", "Chat.addUser", "New user |ID=" + newUser.getId() + "| successfully joined");
+        logger.log("SUCCESS", "Chat.addUser", "New user |ID=" + newUser.getId() + "| successfully joined", new Utils().getLineNumber());
     }
 
     public void setChatNameModified(boolean chatNameModified) {

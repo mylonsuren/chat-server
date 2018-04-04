@@ -33,11 +33,11 @@ public class AutoModerator {
         boolean invalid = false;
         this.message = message;
         this.client = client;
-        logger.log("INFO", "AutoModerator.checkMessage", "Checking message...");
+        logger.log("INFO", "AutoModerator.checkMessage", "Checking message...", new Utils().getLineNumber());
         for (int i = 0; i < words.size(); i++) {
             if (this.message.contains(words.get(i).getWord())) {
                 invalid = true;
-                logger.log("INFO", "AutoModerator.checkMessage", "Invalid phrase/word found");
+                logger.log("INFO", "AutoModerator.checkMessage", "Invalid phrase/word found", new Utils().getLineNumber());
                 chat.getUser(client.getIdNumber()).addWarning();
                 checkWarningLevel();
                 break;
@@ -45,24 +45,24 @@ public class AutoModerator {
         }
 
         if (invalid) {
-            logger.log("INFO", "AutoModerator.checkMessage", "Message is invalid...");
+            logger.log("INFO", "AutoModerator.checkMessage", "Message is invalid...", new Utils().getLineNumber());
         } else {
-            logger.log("INFO", "AutoModerator.checkMessage", "Message is valid...");
+            logger.log("INFO", "AutoModerator.checkMessage", "Message is valid...", new Utils().getLineNumber());
         }
     }
 
     private void checkWarningLevel() {
         int level = chat.getUser(client.getIdNumber()).getWarn();
         if (level > maxLevel) {
-            logger.log("INFO", "AutoModerator.checkWarningLevel", "Banning user...");
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "Banning user...", new Utils().getLineNumber());
             assertBan();
         } else if (level == maxLevel) {
-            logger.log("INFO", "AutoModerator.checkWarningLevel", "Issuing time ban...");
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "Issuing time ban...", new Utils().getLineNumber());
             issueTimeBan();
             chat.getUser(client.getIdNumber()).setTimeActive();
-            logger.log("INFO", "AutoModerator.checkWarningLevel", "after timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "after timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
         } else {
-            logger.log("INFO", "AutoModerator.checkWarningLevel", "Issuing warning...");
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "Issuing warning...", new Utils().getLineNumber());
             issueWarning(level);
         }
     }
@@ -70,44 +70,44 @@ public class AutoModerator {
     private void issueTimeBan() {
         try {
             client.getOs().println("You have been issued a time ban of " + timeBan + " minutes.");
-            logger.log("INFO", "AutoModerator.issueTimeBan", "before timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.issueTimeBan", "before timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
             chat.getUser(client.getIdNumber()).setTimeActive();
-            logger.log("INFO", "AutoModerator.issueTimeBan", "during timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.issueTimeBan", "during timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
             TimeUnit.SECONDS.sleep(timeBan);
         } catch (InterruptedException error) {
-            logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString());
+            logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString(), new Utils().getLineNumber());
         }
     }
 
     private void assertBan() {
         client.getOs().println("You have been banned from the chat.");
-        logger.log("INFO", "AutoModerator.assertBan", "User banned");
+        logger.log("INFO", "AutoModerator.assertBan", "User banned", new Utils().getLineNumber());
         chat.removeUser(client.getIdNumber());
         client.getOs().close();
     }
 
     private void issueWarning(int level) {
-        logger.log("INFO", "AutoModerator.issueWarning", "Warning issued to user");
+        logger.log("INFO", "AutoModerator.issueWarning", "Warning issued to user", new Utils().getLineNumber());
         int diff = maxLevel - level;
         client.getOs().println("This is warning " + level + ". You have " + diff + " warnings left.");
     }
 
     public void issueWarning(clientThread client) {
-        logger.log("INFO", "AutoModerator.issueWarning", "Manual warning issued to user");
+        logger.log("INFO", "AutoModerator.issueWarning", "Manual warning issued to user", new Utils().getLineNumber());
         client.getOs().println("This is a warning from the conversation moderators, any further infringements will result in official warnings and bans.");
     }
 
     public void timeBan(clientThread client) {
         try {
             client.getOs().println("You have been issued a time ban of " + timeBan + " minutes.");
-            logger.log("INFO", "AutoModerator.issueTimeBan", "before timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.issueTimeBan", "before timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
             chat.getUser(client.getIdNumber()).setTimeActive();
-            logger.log("INFO", "AutoModerator.issueTimeBan", "during timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.issueTimeBan", "during timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
             TimeUnit.SECONDS.sleep(timeBan);
             chat.getUser(client.getIdNumber()).setTimeActive();
-            logger.log("INFO", "AutoModerator.checkWarningLevel", "after timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive());
+            logger.log("INFO", "AutoModerator.checkWarningLevel", "after timeout --> " + chat.getUser(client.getIdNumber()).isTimeActive(), new Utils().getLineNumber());
         } catch (InterruptedException error) {
-            logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString());
+            logger.log("ERROR", "AutoModerator.issueTimeBan", error.toString(), new Utils().getLineNumber());
         }
     }
 

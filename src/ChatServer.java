@@ -3,12 +3,14 @@
 
 import jdk.jshell.execution.Util;
 
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.ArrayList;
+import static org.junit.Assert.*;
 
 
 public class ChatServer {
@@ -212,6 +214,7 @@ class clientThread extends Thread {
             inputs.add("/users-view");
             inputs.add("/chat-name-set testing123");
             inputs.add("/chat-name-view");
+            inputs.add("/restart");
             inputs.add("/quit");
             int inputIndex = 0;
 
@@ -219,10 +222,7 @@ class clientThread extends Thread {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT", new Utils().getLineNumber());
                 os.println("Enter your name:");
                 msgName = is.readLine().trim();
-                if (!msgName.contains(specialCharacters.get(0))) {
-                    break;
-                }
-                else if (!msgName.contains(specialCharacters.get(1))) {
+                if (!msgName.contains(specialCharacters.get(0)) && !msgName.contains(specialCharacters.get(1))) {
                     break;
                 } else {
                     os.println("The name should not contain '@' character.");
@@ -255,19 +255,8 @@ class clientThread extends Thread {
 
             while (true) {
 
-                this.input = null;
-
-                if (msgName.equals("user1")) {
-                    this.input = inputs.get(inputIndex);
-                    inputIndex++;
-                } else {
-                    String line = is.readLine();
-                    this.input = line;
-                }
-
-
-
-
+                String line = is.readLine();
+                this.input = line;
 
                 // Chat commands
                 if (this.input.startsWith("/")) {

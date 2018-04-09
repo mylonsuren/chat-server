@@ -56,7 +56,6 @@ public class Testing {
         timeout(2);
 
         word.action(5);
-//        word.action(1);
     }
 
 }

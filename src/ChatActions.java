@@ -115,6 +115,15 @@ public class ChatActions {
             client.setMsgName(newName);
             chat.getUsers().get(client.getIdNumber()).setName(newName);
             logger.log("INFO", "ChatActions.modifyName", "Current user name: " + currentName + ", new user name: " + newName, new Utils().getLineNumber());
+
+            clientThread[] threads = client.getThreads();
+
+            for (int i = 0; i < chat.getNumParticipants(); i++) {
+                if (threads[i] != null && threads[i].getClientName() != null) {
+                    threads[i].getOs().println(currentName + " has changed their name to " + newName);
+                }
+            }
+
         } else {
             printToClient("Please provide a new name as well. (e.g. /modify-name John)\n");
             logger.log("ERROR", "ChatActions.modifyName","No parameter provided", new Utils().getLineNumber());

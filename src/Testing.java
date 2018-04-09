@@ -38,22 +38,31 @@ public class Testing {
     }
 
     public static void start (Words word) throws InterruptedException {
-        timeout(3);
+        timeout(2);
 
         word.messages(3);
-        timeout(2);
+        timeout(1);
 
         word.messages(1);
-        timeout(2);
+        timeout(1);
 
         word.action(3);
-        timeout(2);
+        timeout(1);
 
         word.action(2);
-        timeout(2);
+        timeout(1);
 
         word.action(4);
-        timeout(2);
+        timeout(1);
+
+        word.action(7);
+        timeout(1);
+
+        word.action(6);
+        timeout(1);
+
+        word.action(8);
+        timeout(3);
 
         word.action(5);
     }
@@ -184,6 +193,56 @@ class Words extends Testing {
                 bot.keyPress(KeyEvent.VK_O);
                 bot.keyPress(KeyEvent.VK_W);
                 bot.keyPress(KeyEvent.VK_N);
+                bot.keyPress(KeyEvent.VK_ENTER);
+                break;
+            case 6 :
+                bot.keyPress(KeyEvent.VK_SLASH);
+                bot.keyPress(KeyEvent.VK_C);
+                bot.keyPress(KeyEvent.VK_H);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_T);
+                bot.keyPress(KeyEvent.VK_MINUS);
+                bot.keyPress(KeyEvent.VK_N);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_M);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_MINUS);
+                bot.keyPress(KeyEvent.VK_V);
+                bot.keyPress(KeyEvent.VK_I);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_W);
+                bot.keyPress(KeyEvent.VK_ENTER);
+                break;
+            case 7 :
+                bot.keyPress(KeyEvent.VK_SLASH);
+                bot.keyPress(KeyEvent.VK_M);
+                bot.keyPress(KeyEvent.VK_O);
+                bot.keyPress(KeyEvent.VK_D);
+                bot.keyPress(KeyEvent.VK_I);
+                bot.keyPress(KeyEvent.VK_F);
+                bot.keyPress(KeyEvent.VK_Y);
+                bot.keyPress(KeyEvent.VK_MINUS);
+                bot.keyPress(KeyEvent.VK_N);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_M);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_SPACE);
+                bot.keyPress(KeyEvent.VK_U);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_ENTER);
+                break;
+            case 8 :
+                bot.keyPress(KeyEvent.VK_SLASH);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_T);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_T);
+                bot.keyPress(KeyEvent.VK_ENTER);
                 break;
             default :
                 bot.keyPress(KeyEvent.VK_D);

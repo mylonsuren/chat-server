@@ -1,13 +1,8 @@
 
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.*;
 import java.awt.AWTException;
 import java.awt.Robot;
-import java.awt.event.*;
-import java.security.Key;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Testing {

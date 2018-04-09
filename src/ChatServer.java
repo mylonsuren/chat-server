@@ -225,7 +225,7 @@ class clientThread extends Thread {
                 if (!msgName.contains(specialCharacters.get(0)) && !msgName.contains(specialCharacters.get(1))) {
                     break;
                 } else {
-                    os.println("The name should not contain '@' character.");
+                    os.println("The name should not contain '@' or '/' characters.");
                 }
 
             }

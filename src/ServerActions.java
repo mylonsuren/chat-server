@@ -13,10 +13,12 @@ public class ServerActions {
     private String actionMessage;
     private String userMessage;
     private clientThread[] clients;
+    private ChatActions chatActions;
 
     private String allUsers = "all_users";
 
-    public ServerActions() {
+    public ServerActions(ChatActions chatActions) {
+        this.chatActions = chatActions;
         this.logger = new ChatLog();
         this.serverCommands = new HashMap<>();
         this.serverCommands.put("SHUTDOWN", "/shutdown");
@@ -27,6 +29,9 @@ public class ServerActions {
         this.serverCommands.put("REMOVE_USER", "/remove");
         this.serverCommands.put("INFO", "/info");
         this.serverCommands.put("MESSAGE_USER", "/message");
+        this.serverCommands.put("WARN_USER", "/warn");
+        this.serverCommands.put("TIME_BAN", "/time-ban");
+        this.serverCommands.put("RESTART", "/restart");
 
         this.action = "";
     }
@@ -37,7 +42,7 @@ public class ServerActions {
         if (action.startsWith(serverCommands.get("SHUTDOWN"))) {
             shutdown();
         } else if (action.startsWith(serverCommands.get("CLEAR"))) {
-            logger.log("INFO", "ServerActions.handleAction", "CLEAR LOG");
+            logger.log("INFO", "ServerActions.handleAction", "CLEAR LOG", new Utils().getLineNumber());
             clearLog();
         } else if (action.startsWith(serverCommands.get("VIEW_USERS"))) {
             viewUsers();
@@ -53,21 +58,21 @@ public class ServerActions {
                     viewConversation(conversationLength);
                 }
             } catch (NumberFormatException error) {
-                logger.log("ERROR", "ServerActions.handleAction", error.toString());
+                logger.log("ERROR", "ServerActions.handleAction", error.toString(), new Utils().getLineNumber());
                 System.out.println("\nInvalid parameter given, please leave blank or input integer for '/view-conversation'\n");
             }
         } else if (action.startsWith(serverCommands.get("REMOVE_USER"))) {
             parseActionMessage();
             try {
                 if (actionMessage == null) {
-                    logger.log("ERROR", "ServerActions.handleAction", "No user id provided");
+                    logger.log("ERROR", "ServerActions.handleAction", "No user id provided", new Utils().getLineNumber());
                     System.out.println("\nPlease provide a user id for '/remove'");
                 } else {
                     int userID = Integer.parseInt(actionMessage);
                     removeUser(userID);
                 }
             } catch (NumberFormatException error) {
-                logger.log("ERROR", "ServerActions.handleAction", error.toString());
+                logger.log("ERROR", "ServerActions.handleAction", error.toString(), new Utils().getLineNumber());
                 System.out.println("\nInvalid parameter given, please input integer for '/remove'\n");
             }
         } else if (action.startsWith(serverCommands.get("INFO"))) {
@@ -75,6 +80,14 @@ public class ServerActions {
         } else if (action.startsWith(serverCommands.get("MESSAGE_USER"))) {
             parseUserMessage();
             sendUserMessage();
+        } else if (action.startsWith(serverCommands.get("WARN_USER"))) {
+            parseActionMessage();
+            warnUser();
+        } else if (action.startsWith(serverCommands.get("TIME_BAN"))) {
+            parseActionMessage();
+            timeBanUser();
+        } else if (action.startsWith(serverCommands.get("RESTART"))) {
+            restartServer();
         } else {
             if (action.startsWith("/")) {
                 System.out.println("Invalid action, please enter a valid action");
@@ -85,9 +98,9 @@ public class ServerActions {
     private void parseActionMessage() {
         actionMessage = null;
         String[] message = action.split("\\s", 2);
-        logger.log("INFO", "ServerActions.parseActionMessage", "ACTION = " + message[0]);
+        logger.log("INFO", "ServerActions.parseActionMessage", "ACTION = " + message[0], new Utils().getLineNumber());
         if (message.length > 1 && message[1] != null) {
-            logger.log("INFO", "ServerActions.parseActionMessage", "ACTION PARAMETER = " + message[1]);
+            logger.log("INFO", "ServerActions.parseActionMessage", "ACTION PARAMETER = " + message[1], new Utils().getLineNumber());
             message[1] = message[1].trim();
             if (!message[1].isEmpty()) {
                 actionMessage = message[1];
@@ -100,10 +113,10 @@ public class ServerActions {
         try {
             actionMessage = null;
             String[] message = action.split("\\s", 3);
-            logger.log("INFO", "ServerActions.parseUserMessage", "ACTION = " + message[0]);
+            logger.log("INFO", "ServerActions.parseUserMessage", "ACTION = " + message[0], new Utils().getLineNumber());
             if (message.length > 1 && message[1] != null && message[2] != null) {
-                logger.log("INFO", "ServerActions.parseUserMessage", "USER = " + message[1]);
-                logger.log("INFO", "ServerActions.parseUserMessage", "MESSAGE = " + message[2]);
+                logger.log("INFO", "ServerActions.parseUserMessage", "USER = " + message[1], new Utils().getLineNumber());
+                logger.log("INFO", "ServerActions.parseUserMessage", "MESSAGE = " + message[2], new Utils().getLineNumber());
                 message[1] = message[1].trim();
                 message[2] = message[2].trim();
                 if (!message[1].isEmpty() && !message[2].isEmpty()) {
@@ -113,7 +126,35 @@ public class ServerActions {
                 }
             }
         } catch (ArrayIndexOutOfBoundsException error) {
-            logger.log("ERROR", "ServerActions.parseUserMessage", error.toString());
+            logger.log("ERROR", "ServerActions.parseUserMessage", error.toString(), new Utils().getLineNumber());
+        }
+    }
+
+    public void restartServer() {
+        logger.log("INFO", "ServerActions.restartServer", "Server is being restarted", new Utils().getLineNumber());
+        ChatServer.serServerSocket();
+        logger.log("SUCCESS", "ServerActions.restartServer", "Server successfully reset", new Utils().getLineNumber());
+    }
+
+    public void warnUser() {
+        for (clientThread client : clients) {
+            if (client != null) {
+                if (client.getMsgName().equals(actionMessage)) {
+                    new AutoModerator(chatActions).issueWarning(client);
+                }
+            }
+
+        }
+    }
+
+    public void timeBanUser() {
+        for (clientThread client : clients) {
+            if (client != null) {
+                if (client.getMsgName().equals(actionMessage)) {
+                    new AutoModerator(chatActions).timeBan(client);
+                }
+            }
+
         }
     }
 
@@ -130,16 +171,16 @@ public class ServerActions {
                     clients[i].getOs().print("[" + new Utils().getTime("SHORT_DATE") + "] ADMINISTRATOR: ");
                     clients[i].getOs().println(message);
                     clients[i].getOs().println("--------");
-                    logger.log("SUCCESS", "ServerActions.sendUserMessage", "MESSAGE SENT TO  " + user + " SUCCESSFULLY");
+                    logger.log("SUCCESS", "ServerActions.sendUserMessage", "MESSAGE SENT TO  " + user + " SUCCESSFULLY", new Utils().getLineNumber());
                     messageSent = true;
                 }
             } catch (NullPointerException error) {
-                logger.log("ERROR", "ServerActions.sendUserMessage", error.toString());
+                logger.log("ERROR", "ServerActions.sendUserMessage", error.toString(), new Utils().getLineNumber());
             }
         }
 
         if (!messageSent) {
-            logger.log("ERROR", "ServerActions.sendUserMessage", "INVALID USER | USER DOES NOT EXIST");
+            logger.log("ERROR", "ServerActions.sendUserMessage", "INVALID USER | USER DOES NOT EXIST", new Utils().getLineNumber());
             viewUsers();
         }
 
@@ -151,16 +192,16 @@ public class ServerActions {
             if (clients[i] != null && clients[i].getIdNumber() == id) {
                 ChatServer.chat.getChat().removeUser(id);
                 clients[i].getOs().close();
-                logger.log("SUCCESS", "ServerActions.removeUser", "USER id=" + id + " removed");
+                logger.log("SUCCESS", "ServerActions.removeUser", "USER id=" + id + " removed", new Utils().getLineNumber());
                 return;
             }
         }
 
-        logger.log("ERROR", "ServerActions.removeUser", "USER id=" + id + " invalid");
+        logger.log("ERROR", "ServerActions.removeUser", "USER id=" + id + " invalid", new Utils().getLineNumber());
     }
 
     public void shutdown() {
-        logger.log("SUCCESS", "ServerActions.shutdown", "Server successfully shutdown");
+        logger.log("SUCCESS", "ServerActions.shutdown", "Server successfully shutdown", new Utils().getLineNumber());
         System.exit(0);
     }
 
@@ -177,18 +218,18 @@ public class ServerActions {
     public void clearLog() {
 
         try {
-            logger.log("INFO", "ServerActions.clearLog", "Attempting to clear log");
+            logger.log("INFO", "ServerActions.clearLog", "Attempting to clear log", new Utils().getLineNumber());
             for (int i = 0; i < 50; i++) {
                 System.out.print("\n");
             }
-            logger.log("SUCCESS", "ServerActions.clearLog", "Log successfully cleared");
+            logger.log("SUCCESS", "ServerActions.clearLog", "Log successfully cleared", new Utils().getLineNumber());
             System.out.println("Please wait 3 seconds before resuming application");
             TimeUnit.SECONDS.sleep(2);
             for (int i = 0; i < 50; i++) {
                 System.out.print("\n");
             }
         } catch (InterruptedException error) {
-            logger.log("ERROR", "ServerActions.clearLog", error.toString());
+            logger.log("ERROR", "ServerActions.clearLog", error.toString(), new Utils().getLineNumber());
         }
 
     }
@@ -270,8 +311,8 @@ class Message {
 
 class Information {
 
-    private String versionNo = "0.2.3";
-    private String versionDate = "28/03/2018";
+    private String versionNo = "0.2.5";
+    private String versionDate = "04/04/2018";
     private String author = "Mylon S";
 
     public Information() {}

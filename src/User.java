@@ -60,7 +60,7 @@ public class User {
     }
 
     private int generateID() {
-        logger.log("SUCCESS", "User.generateID", "ID successfully generated");
+        logger.log("SUCCESS", "User.generateID", "ID successfully generated", new Utils().getLineNumber());
         return ThreadLocalRandom.current().nextInt(100, 999 + 1);
     }
 

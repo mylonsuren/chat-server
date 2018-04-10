@@ -8,34 +8,54 @@ interface LogFns {
 }
 
 class error extends LogComponent implements LogFns {
-    public error(String title, String log) {
-        super(title, log);
+    public error(String title, String log, int line) {
+        super(title, log, line);
     }
     @Override
     public void execute() {
-        System.err.println("ERROR | " + time + " | " + title + " | " + log);
+        System.err.println("ERROR | " + time + " | " + title + " (ln. " + line + ") | " + log);
     }
 }
 
 class success extends LogComponent implements LogFns {
-    public success(String title, String log) {
-        super(title, log);
+    public success(String title, String log, int line) {
+        super(title, log, line);
     }
     @Override
     public void execute() {
-        System.out.println("SUCCESS | " + time + " | " + title + " | " + log);
+        System.out.println("SUCCESS | " + time + " | " + title + " (ln. " + line + ") | " + log);
     }
 }
 
 class info extends LogComponent implements LogFns {
-    public info(String title, String log) {
-        super(title, log);
+    public info(String title, String log, int line) {
+        super(title, log, line);
     }
 
     @Override
     public void execute() {
-        System.out.println("INFO | " + time + " | " + title + " | " + log);
+        System.out.println("INFO | " + time + " | " + title + " (ln. " + line + ") | " + log);
     }
+}
+
+class test extends LogComponent implements LogFns {
+    public test(String title, String log, int line) {
+        super(title, log, line);
+    }
+
+    @Override
+    public void execute() { System.out.println("TEST | " + time + " | " + title + " | " + log ); }
+
+}
+
+class debug extends LogComponent implements LogFns {
+    public debug(String title, String log, int line) {
+        super(title, log, line);
+    }
+
+    @Override
+    public void execute() { System.out.println("DEBUG | " + time + " | " + title + " | " + log ); }
+
 }
 
 
@@ -62,13 +82,15 @@ public class ChatLog {
     }
 
 
-    public void log(String type, String title, String log) {
+    public void log(String type, String title, String log, int line) {
 
-        logType.put("ERROR", new error(title, log));
-        logType.put("SUCCESS", new success(title, log));
-        logType.put("INFO", new info(title, log));
+        logType.put("ERROR", new error(title, log, line));
+        logType.put("SUCCESS", new success(title, log, line));
+        logType.put("INFO", new info(title, log, line));
+        logType.put("TEST", new test(title, log, line));
+        logType.put("DEBUG", new debug(title, log, line));
 
-        this.message = new LogComponent(title, log);
+        this.message = new LogComponent(title, log, line);
 
         String time = utils.getTime("FULL_DATE");
 
@@ -95,11 +117,13 @@ class LogComponent {
     String title;
     String log;
     String time;
+    int line;
 
-    public LogComponent(String title, String log) {
+    public LogComponent(String title, String log, int line) {
         this.log = log;
         this.title = title;
         this.time = utils.getTime("FULL_DATE");
+        this.line = line;
     }
 
 }

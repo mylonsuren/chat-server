@@ -88,7 +88,9 @@ public class ChatServer {
                         clientSocket.close();
                     }
                 } catch (IOException e) {
-                    logger.log("ERROR", "ChatServer.main | Thread 2", e.toString(), new Utils().getLineNumber());
+                    if (!(e.toString().contains("SocketException"))) {
+                        logger.log("ERROR", "ChatServer.main | Thread 2", e.toString(), new Utils().getLineNumber());
+                    }
                 }
             }
         });

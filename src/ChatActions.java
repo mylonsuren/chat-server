@@ -114,6 +114,7 @@ public class ChatActions {
             String newName = actionMessage;
             client.setMsgName(newName);
             chat.getUsers().get(client.getIdNumber()).setName(newName);
+            chat.resetChatName();
             logger.log("INFO", "ChatActions.modifyName", "Current user name: " + currentName + ", new user name: " + newName, new Utils().getLineNumber());
 
             clientThread[] threads = client.getThreads();

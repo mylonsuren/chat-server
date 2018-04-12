@@ -273,6 +273,7 @@ public class ChatActions {
             }
         }
         if (removed) {
+            printToClient(user + " removed from the conversation.\n");
             logger.log("SUCCESS", "ChatActions.removeUser", "REMOVE USER --> DONE", new Utils().getLineNumber());
         } else {
             logger.log("ERROR", "ChatActions.removeUser", "Invalid user provided", new Utils().getLineNumber());

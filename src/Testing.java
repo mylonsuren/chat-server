@@ -61,6 +61,9 @@ public class Testing {
         word.action(6);
         timeout(1);
 
+        word.action(9);
+        timeout(1);
+
         word.action(8);
         timeout(3);
 
@@ -242,6 +245,26 @@ class Words extends Testing {
                 bot.keyPress(KeyEvent.VK_A);
                 bot.keyPress(KeyEvent.VK_R);
                 bot.keyPress(KeyEvent.VK_T);
+                bot.keyPress(KeyEvent.VK_ENTER);
+                break;
+            case 9 :
+                bot.keyPress(KeyEvent.VK_SLASH);
+                bot.keyPress(KeyEvent.VK_U);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_MINUS);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_M);
+                bot.keyPress(KeyEvent.VK_O);
+                bot.keyPress(KeyEvent.VK_V);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_SPACE);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_P);
+                bot.keyPress(KeyEvent.VK_P);
                 bot.keyPress(KeyEvent.VK_ENTER);
                 break;
             default :

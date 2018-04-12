@@ -13,9 +13,7 @@ public class Testing {
 
 
 
-        Thread chatServer = new Thread(() -> {
-            ChatClient.main(new String[0]);
-        });
+        Thread chatServer = new Thread(() -> ChatClient.main(new String[0]));
 
         Thread testBot = new Thread(() -> {
             try {
@@ -33,7 +31,7 @@ public class Testing {
     }
 
 
-    public static void timeout (int time) throws InterruptedException {
+    private static void timeout(int time) throws InterruptedException {
         TimeUnit.SECONDS.sleep(time);
     }
 
@@ -55,14 +53,23 @@ public class Testing {
         word.action(4);
         timeout(1);
 
+        word.action(3);
+        timeout(1);
+
         word.action(7);
         timeout(1);
 
         word.action(6);
         timeout(1);
 
+        word.action(9);
+        timeout(1);
+
         word.action(8);
         timeout(3);
+
+        word.action(4);
+        timeout(1);
 
         word.action(5);
     }
@@ -72,7 +79,7 @@ public class Testing {
 
 class Words extends Testing {
 
-    public Robot bot;
+    private final Robot bot;
 
     public Words(Robot bot) {
         super();
@@ -242,6 +249,26 @@ class Words extends Testing {
                 bot.keyPress(KeyEvent.VK_A);
                 bot.keyPress(KeyEvent.VK_R);
                 bot.keyPress(KeyEvent.VK_T);
+                bot.keyPress(KeyEvent.VK_ENTER);
+                break;
+            case 9 :
+                bot.keyPress(KeyEvent.VK_SLASH);
+                bot.keyPress(KeyEvent.VK_U);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_S);
+                bot.keyPress(KeyEvent.VK_MINUS);
+                bot.keyPress(KeyEvent.VK_R);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_M);
+                bot.keyPress(KeyEvent.VK_O);
+                bot.keyPress(KeyEvent.VK_V);
+                bot.keyPress(KeyEvent.VK_E);
+                bot.keyPress(KeyEvent.VK_SPACE);
+                bot.keyPress(KeyEvent.VK_A);
+                bot.keyPress(KeyEvent.VK_P);
+                bot.keyPress(KeyEvent.VK_P);
                 bot.keyPress(KeyEvent.VK_ENTER);
                 break;
             default :

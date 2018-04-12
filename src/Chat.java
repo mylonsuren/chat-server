@@ -1,6 +1,7 @@
 
 import java.util.*;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Chat {
 
 
@@ -12,12 +13,12 @@ public class Chat {
 
     private String chatName;
     private User newUser;
-    private ChatLog logger = new ChatLog();
+    private final ChatLog logger = new ChatLog();
     private Utils utils = new Utils();
     private boolean chatNameModified = false;
 
     public Chat () {
-        this.users = new HashMap<Integer, User>();
+        this.users = new HashMap<>();
         this.numParticipants = 0;
         this.chatName = "";
     }

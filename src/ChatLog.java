@@ -99,7 +99,7 @@ public class ChatLog {
         validateLog(type);
     }
 
-    public void validateLog(String type) {
+    private void validateLog(String type) {
         if (logType.containsKey(type) || logType.containsValue(type)) {
             logType.get(type).execute();
         }

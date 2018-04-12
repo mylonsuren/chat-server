@@ -36,7 +36,7 @@ public class ChatClient extends Applet implements Runnable {
                     + "Now using host=" + host + ", portNumber=" + portNumber);
         } else {
             host = args[0];
-            portNumber = Integer.valueOf(args[1]).intValue();
+            portNumber = Integer.valueOf(args[1]);
         }
 
 

@@ -311,8 +311,8 @@ class Message {
 
 class Information {
 
-    private String versionNo = "0.2.5";
-    private String versionDate = "04/04/2018";
+    private String versionNo = "0.3.1";
+    private String versionDate = "04/012/2018";
     private String author = "Mylon S";
 
     public Information() {}

@@ -2,11 +2,12 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 
+@SuppressWarnings("ALL")
 public class Utils {
 
     private ChatLog logger;
 
-    private HashMap<String, String> timeFormat;
+    private final HashMap<String, String> timeFormat;
 
 
     public Utils() {
@@ -16,8 +17,7 @@ public class Utils {
     }
 
     public String getTime(String format) {
-        String msgTime = new SimpleDateFormat(timeFormat.get(format)).format(new java.util.Date());
-        return msgTime;
+        return new SimpleDateFormat(timeFormat.get(format)).format(new java.util.Date());
     }
 
     public void printToServer(String message, clientThread[] clients) {
@@ -40,6 +40,7 @@ public class Utils {
      * @return The line number of the code that called the method that called
      *         this method(Should only be called by getLineNumber()).
     */
+    @SuppressWarnings("SpellCheckingInspection")
     private int ___8drrd3148796d_Xaf() {
         boolean thisOne = false;
         int thisOneCountDown = 1;
@@ -52,6 +53,7 @@ public class Utils {
             } else if(thisOne) {
                 thisOneCountDown--;
             }
+            //noinspection SpellCheckingInspection,SpellCheckingInspection
             if(methodName.equals("___8drrd3148796d_Xaf")) {
                 thisOne = true;
             }

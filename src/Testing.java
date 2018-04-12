@@ -13,9 +13,7 @@ public class Testing {
 
 
 
-        Thread chatServer = new Thread(() -> {
-            ChatClient.main(new String[0]);
-        });
+        Thread chatServer = new Thread(() -> ChatClient.main(new String[0]));
 
         Thread testBot = new Thread(() -> {
             try {
@@ -33,7 +31,7 @@ public class Testing {
     }
 
 
-    public static void timeout (int time) throws InterruptedException {
+    private static void timeout(int time) throws InterruptedException {
         TimeUnit.SECONDS.sleep(time);
     }
 
@@ -55,6 +53,9 @@ public class Testing {
         word.action(4);
         timeout(1);
 
+        word.action(3);
+        timeout(1);
+
         word.action(7);
         timeout(1);
 
@@ -67,6 +68,9 @@ public class Testing {
         word.action(8);
         timeout(3);
 
+        word.action(4);
+        timeout(1);
+
         word.action(5);
     }
 
@@ -75,7 +79,7 @@ public class Testing {
 
 class Words extends Testing {
 
-    public Robot bot;
+    private final Robot bot;
 
     public Words(Robot bot) {
         super();

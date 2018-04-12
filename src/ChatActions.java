@@ -8,7 +8,7 @@ import java.util.Map;
 public class ChatActions {
 
     private String action;
-    private Chat chat;
+    private final Chat chat;
     private clientThread client;
     private String actionMessage;
 
@@ -247,10 +247,9 @@ public class ChatActions {
         try {
             logger.log("INFO", "ChatActions.viewUsers", "PRINTING USER LIST", new Utils().getLineNumber());
             printToClient("CURRENT PARTICIPANTS: \n");
-            Iterator it = chat.getUsers().entrySet().iterator();
-            while (it.hasNext()) {
+            for (Object o : chat.getUsers().entrySet()) {
 
-                Map.Entry pair = (Map.Entry)it.next();
+                Map.Entry pair = (Map.Entry) o;
                 logger.log("INFO", "ChatActions.viewUsers", "USER --> " + pair.getKey(), new Utils().getLineNumber());
                 printToClient("| " + pair.getKey().toString() + " - " + chat.getUsers().get(pair.getKey()).getName() + " |\n");
             }

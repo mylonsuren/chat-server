@@ -1,10 +1,9 @@
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class AutoModerator {
 
-    private HashMap<String, String> actions;
+    private final HashMap<String, String> actions;
     private HashMap<Integer, ReplaceWords> words;
     private ChatActions chatActions;
     private Chat chat;
@@ -127,7 +126,7 @@ public class AutoModerator {
 
 class ReplaceWords {
 
-    private String word;
+    private final String word;
     private String replacement;
 
     public ReplaceWords(String word, String replacement) {

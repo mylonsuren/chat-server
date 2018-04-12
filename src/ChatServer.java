@@ -1,16 +1,11 @@
 
 
 
-import jdk.jshell.execution.Util;
-
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.ArrayList;
-import static org.junit.Assert.*;
 
 
 public class ChatServer {
@@ -46,7 +41,7 @@ public class ChatServer {
             logger.log("INFO","ChatServer.main", "java MultiThreadChatServerSync <" + portNumberString + ">", new Utils().getLineNumber());
             logger.log("INFO","ChatServer.main", "Now using port number=" + portNumberString, new Utils().getLineNumber());
         } else {
-            portNumber = Integer.valueOf(args[0]).intValue();
+            portNumber = Integer.valueOf(args[0]);
         }
 
         try {
@@ -122,12 +117,10 @@ public class ChatServer {
         ChatServer.main(new String[0]);
     }
 
-    public static clientThread[] getThreads() {
-        return threads;
-    }
 }
 
 
+@SuppressWarnings("FieldCanBeLocal")
 class clientThread extends Thread {
 
     private String clientName = null;
@@ -139,8 +132,10 @@ class clientThread extends Thread {
     private int maxClientsCount;
     private int idNumber;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private String input;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private HashMap<String, String> commands;
     private HashMap<Integer, String> specialCharacters;
 
@@ -218,11 +213,13 @@ class clientThread extends Thread {
             inputs.add("/chat-name-view");
             inputs.add("/restart");
             inputs.add("/quit");
+            //noinspection unused
             int inputIndex = 0;
 
             while (true) {
                 ChatServer.logger.log("INFO", "clientThread.run", "NAME PROMPT", new Utils().getLineNumber());
                 os.println("Enter your name:");
+                //noinspection deprecation
                 msgName = is.readLine().trim();
                 if (!msgName.contains(specialCharacters.get(0)) && !msgName.contains(specialCharacters.get(1))) {
                     break;
@@ -257,8 +254,8 @@ class clientThread extends Thread {
 
             while (true) {
 
-                String line = is.readLine();
-                this.input = line;
+                //noinspection deprecation
+                this.input = is.readLine();
 
                 // Chat commands
                 if (this.input.startsWith("/")) {

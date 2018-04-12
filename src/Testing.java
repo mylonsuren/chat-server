@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Testing {
 
+    private static ChatLog logger = new ChatLog();
 
 
     public static void main (String args[]) {
@@ -36,6 +37,7 @@ public class Testing {
     }
 
     public static void start (Words word) throws InterruptedException {
+        logger.log("TEST", "Testing.start", "Test app started", new Utils().getLineNumber());
         timeout(2);
 
         word.messages(3);
@@ -71,6 +73,7 @@ public class Testing {
         word.action(4);
         timeout(1);
 
+        logger.log("TEST", "Testing.start", "Test app ended", new Utils().getLineNumber());
         word.action(5);
     }
 

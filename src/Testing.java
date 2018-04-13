@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class Testing {
 
@@ -17,6 +18,14 @@ public class Testing {
 
         Thread testBot = new Thread(() -> {
             try {
+
+                Function <Integer, Integer> test = integer -> {
+                    return 5;
+                };
+
+
+                System.out.println(test.apply(1));
+
                 Robot testRobot = new Robot();
                 Words word = new Words(testRobot);
                 start(word);
@@ -35,7 +44,7 @@ public class Testing {
         TimeUnit.SECONDS.sleep(time);
     }
 
-    public static void start (Words word) throws InterruptedException {
+    private static void start(Words word) throws InterruptedException {
         timeout(2);
 
         word.messages(3);

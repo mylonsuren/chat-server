@@ -34,6 +34,7 @@ public class Chat {
                 chatName += users.get(pair.getKey()).getName() + ", ";
             }
 
+
             logger.log("SUCCESS", "Chat.generateChatName", "New chat name successfully created", new Utils().getLineNumber());
         } catch (Error error) {
             logger.log("ERROR", "Chat.generateChatName", error.toString(), new Utils().getLineNumber());

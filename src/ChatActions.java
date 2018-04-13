@@ -2,9 +2,9 @@
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.io.*;
-import java.util.Iterator;
 import java.util.Map;
 
+@SuppressWarnings("SuspiciousMethodCalls")
 public class ChatActions {
 
     private String action;
@@ -12,10 +12,10 @@ public class ChatActions {
     private clientThread client;
     private String actionMessage;
 
-    private ChatLog logger;
+    private final ChatLog logger;
     private Utils utils;
 
-    private HashMap<String,String> commands = new HashMap<>();
+    private final HashMap<String,String> commands = new HashMap<>();
 
     public ChatActions() {
         this.chat = new Chat();
@@ -243,6 +243,7 @@ public class ChatActions {
         }
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     private void viewUsers() {
         try {
             logger.log("INFO", "ChatActions.viewUsers", "PRINTING USER LIST", new Utils().getLineNumber());
